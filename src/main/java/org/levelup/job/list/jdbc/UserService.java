@@ -12,6 +12,6 @@ public interface UserService {
   Collection<User> findByNameAndLastName(String name, String lastName) throws SQLException;
   Collection<User> findByLastName(String lastName) throws SQLException;
   void deleteUserByPassport(String passport) throws SQLException;
-  User updateUser(String name, String lastName, String passport) throws SQLException;
+  User updateUser(String passport, String newName, String newLastName) throws SQLException;
 
 }

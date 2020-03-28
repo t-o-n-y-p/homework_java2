@@ -16,16 +16,8 @@ public class PositionJdbcService implements PositionService {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO positions (name) VALUES (?)");
       statement.setString(1, name);
       statement.executeUpdate();
-
-      statement = connection.prepareStatement("SELECT * FROM positions WHERE name = ?");
-      statement.setString(1, name);
-      ResultSet resultSet = statement.executeQuery();
-      resultSet.next();
-      return new Position(
-          resultSet.getInt("id"),
-          resultSet.getString("name")
-      );
     }
+    return findPositionByName(name);
   }
 
   @Override
@@ -47,10 +39,10 @@ public class PositionJdbcService implements PositionService {
   }
 
   @Override
-  public Collection<Position> findAllPositionWhichNameLike(String name) throws SQLException {
+  public Collection<Position> findAllPositionWhichNameLike(String nameMask) throws SQLException {
     try (Connection connection = JdbcUtils.getConnection()) {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM positions WHERE name LIKE ?");
-      statement.setString(1, name);
+      statement.setString(1, nameMask);
       return extractPositions(statement.executeQuery());
     }
   }
