@@ -76,7 +76,16 @@ public class UserJdbcService implements UserService {
 
   @Override
   public User updateUser(String passport, String newName, String newLastName) throws SQLException {
-    return null;
+    try (Connection connection = JdbcUtils.getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(
+          "UPDATE users SET name = ?, last_name = ? WHERE passport = ?"
+      );
+      statement.setString(1, newName);
+      statement.setString(2, newLastName);
+      statement.setString(3, passport);
+      statement.executeUpdate();
+    }
+    return findByPassport(passport);
   }
 
   private Collection<User> extractUsers(ResultSet resultSet) throws SQLException {
