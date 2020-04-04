@@ -17,6 +17,7 @@
         <property name="hibernate.format_sql">true</property>
 
         <mapping class="org.levelup.hibernate.domain.User" />
+        <mapping class="org.levelup.hibernate.domain.Position" />
 
     </session-factory>
 </hibernate-configuration>

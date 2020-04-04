@@ -81,7 +81,7 @@ public class UserService {
     return users;
   }
 
-  public void deleteByPassport(String passport) {
+  public void deleteUserByPassport(String passport) {
     User user = findByPassport(passport);
     try (Session session = factory.openSession()) {
       Transaction transaction = session.beginTransaction();
@@ -92,14 +92,15 @@ public class UserService {
 
   public User updateUser(String passport, String newName, String newLastName) {
     User user = findByPassport(passport);
+    user.setName(newName);
+    user.setLastName(newLastName);
+    User newUser;
     try (Session session = factory.openSession()) {
       Transaction transaction = session.beginTransaction();
-      session.load(User.class, user.getId());
-      user.setName(newName);
-      user.setLastName(newLastName);
+      newUser = (User) session.merge(user);
       transaction.commit();
     }
-    return user;
+    return newUser;
   }
 
 }
