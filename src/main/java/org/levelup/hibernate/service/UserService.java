@@ -5,6 +5,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.levelup.hibernate.domain.User;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Collection;
+
 public class UserService {
 
   private final SessionFactory factory;
@@ -13,110 +19,87 @@ public class UserService {
     this.factory = factory;
   }
 
-  public User createUserPersist(String name, String lastName, String passport) {
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    User user = new User();  // transient
-    user.setName(name);
-    user.setLastName(lastName);
-    user.setPassport(passport);
-
-    session.persist(user);  // persistent
-
-    transaction.commit();
-    session.close(); // user - detached
-
+  public User createUser(String name, String lastName, String passport) {
+    User user;
+    try (Session session = factory.openSession()) {
+      user = new User();
+      user.setName(name);
+      user.setLastName(lastName);
+      user.setPassport(passport);
+      Transaction transaction = session.beginTransaction();
+      session.persist(user);
+      transaction.commit();
+    }
     return user;
   }
 
-  public Integer createUserSave(String name, String lastName, String passport) {
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    User user = new User();  // transient
-    user.setName(name);
-    user.setLastName(lastName);
-    user.setPassport(passport);
-
-    Integer generatedId = (Integer) session.save(user);
-
-    transaction.commit();
-    session.close();
-
-    return generatedId;
-  }
-
-  public User getById(Integer id) {
-    Session session = factory.openSession();
-//    Transaction transaction = session.beginTransaction();
-
-    User user = session.get(User.class, id);
-    session.close();
+  public User findByPassport(String passport) {
+    User user;
+    try (Session session = factory.openSession()) {
+      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+      Root<User> userRoot = criteriaQuery.from(User.class);
+      Predicate predicate = criteriaBuilder.equal(userRoot.get("passport"), passport);
+      criteriaQuery
+          .select(userRoot)
+          .where(predicate);
+      user = session.createQuery(criteriaQuery).uniqueResult();
+    }
     return user;
-
   }
 
-  public Integer cloneUser(Integer id, String passport) {
-    User user = getById(id);
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    user.setPassport(passport);
-    Integer cloneId = (Integer) session.save(user);
-
-    transaction.commit();
-    session.close();
-
-    return cloneId;
+  public Collection<User> findByLastName(String lastName) {
+    Collection<User> users;
+    try (Session session = factory.openSession()) {
+      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+      Root<User> userRoot = criteriaQuery.from(User.class);
+      Predicate predicate = criteriaBuilder.equal(userRoot.get("lastName"), lastName);
+      criteriaQuery
+          .select(userRoot)
+          .where(predicate);
+      users = session.createQuery(criteriaQuery).getResultList();
+    }
+    return users;
   }
 
-  public User updateUserNameWithMerge(Integer id, String name) {
-    User user = getById(id);
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    user.setName(name);
-    User mergedUser = (User) session.merge(user);
-
-    transaction.commit();
-    session.close();
-
-    System.out.println("original user: " + Integer.toHexString(user.hashCode()));
-    return mergedUser;
+  public Collection<User> findByNameAndLastName(String name, String lastName) {
+    Collection<User> users;
+    try (Session session = factory.openSession()) {
+      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+      Root<User> userRoot = criteriaQuery.from(User.class);
+      Predicate predicate = criteriaBuilder.and(
+          criteriaBuilder.equal(userRoot.get("name"), name),
+          criteriaBuilder.equal(userRoot.get("lastName"), lastName)
+      );
+      criteriaQuery
+          .select(userRoot)
+          .where(predicate);
+      users = session.createQuery(criteriaQuery).getResultList();
+    }
+    return users;
   }
 
-  public User mergeNewUser(String name, String lastName, String passport) {
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    User user = new User();  // transient
-    user.setName(name);
-    user.setLastName(lastName);
-    user.setPassport(passport);
-
-    User newUser = (User) session.merge(user);
-
-    transaction.commit();
-    session.close();
-
-    return newUser;
+  public void deleteByPassport(String passport) {
+    User user = findByPassport(passport);
+    try (Session session = factory.openSession()) {
+      Transaction transaction = session.beginTransaction();
+      session.remove(user);
+      transaction.commit();
+    }
   }
 
-  public void updateUser(String name, String lastName, String passport) {
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-
-    User user = new User();  // transient
-    user.setName(name);
-    user.setLastName(lastName);
-    user.setPassport(passport);
-
-    session.update(user);
-
-    transaction.commit();
-    session.close();
-
+  public User updateUser(String passport, String newName, String newLastName) {
+    User user = findByPassport(passport);
+    try (Session session = factory.openSession()) {
+      Transaction transaction = session.beginTransaction();
+      session.load(User.class, user.getId());
+      user.setName(newName);
+      user.setLastName(newLastName);
+      transaction.commit();
+    }
+    return user;
   }
 
 }
