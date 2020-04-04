@@ -14,9 +14,11 @@ import java.util.Collection;
 public class UserService {
 
   private final SessionFactory factory;
+  private final CriteriaBuilder criteriaBuilder;
 
   public UserService(SessionFactory factory) {
     this.factory = factory;
+    this.criteriaBuilder = factory.getCriteriaBuilder();
   }
 
   public User createUser(String name, String lastName, String passport) {
@@ -36,7 +38,6 @@ public class UserService {
   public User findByPassport(String passport) {
     User user;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
       Root<User> userRoot = criteriaQuery.from(User.class);
       Predicate predicate = criteriaBuilder.equal(userRoot.get("passport"), passport);
@@ -51,7 +52,6 @@ public class UserService {
   public Collection<User> findByLastName(String lastName) {
     Collection<User> users;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
       Root<User> userRoot = criteriaQuery.from(User.class);
       Predicate predicate = criteriaBuilder.equal(userRoot.get("lastName"), lastName);
@@ -66,7 +66,6 @@ public class UserService {
   public Collection<User> findByNameAndLastName(String name, String lastName) {
     Collection<User> users;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
       Root<User> userRoot = criteriaQuery.from(User.class);
       Predicate predicate = criteriaBuilder.and(

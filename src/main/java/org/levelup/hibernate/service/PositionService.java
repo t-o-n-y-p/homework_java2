@@ -14,9 +14,11 @@ import java.util.Collection;
 public class PositionService {
 
   private final SessionFactory factory;
+  private final CriteriaBuilder criteriaBuilder;
 
   public PositionService(SessionFactory factory) {
     this.factory = factory;
+    this.criteriaBuilder = factory.getCriteriaBuilder();
   }
 
   public Position createPosition(String name) {
@@ -42,7 +44,6 @@ public class PositionService {
   public Position findPositionByName(String name) {
     Position position;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
       Root<Position> positionRoot = criteriaQuery.from(Position.class);
       Predicate predicate = criteriaBuilder.equal(positionRoot.get("name"), name);
@@ -57,7 +58,6 @@ public class PositionService {
   public Collection<Position> findAllPositions() {
     Collection<Position> positions;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
       Root<Position> positionRoot = criteriaQuery.from(Position.class);
       criteriaQuery.select(positionRoot);
@@ -69,7 +69,6 @@ public class PositionService {
   public Collection<Position> findAllPositionWhichNameLike(String nameMask) {
     Collection<Position> positions;
     try (Session session = factory.openSession()) {
-      CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
       CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
       Root<Position> positionRoot = criteriaQuery.from(Position.class);
       Predicate predicate = criteriaBuilder.like(positionRoot.get("name"), nameMask);
