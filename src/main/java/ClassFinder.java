@@ -1,3 +1,5 @@
+import org.levelup.lesson4testclasses.RandomIntAnnotationProcessor;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,7 +44,7 @@ public class ClassFinder {
         }
         if (classFromFile.getDeclaredFields().length >= 1 && classFromFile.getDeclaredFields().length <= 3) {
           try {
-            Object instance = classFromFile.newInstance();
+            Object instance = getInstance(classFromFile);
             Method method = classFromFile.getMethod("toString");
             if (method.equals(Object.class.getMethod("toString"))) {
               System.out.println("toString() method is not overridden for class: " + classFromFile.getName());
@@ -59,11 +61,13 @@ public class ClassFinder {
           } catch (InvocationTargetException e) {
             System.out.println("Cannot invoke toString() method for class: " + classFromFile.getName());
           }
-        } else {
-          System.out.println("Incorrect number of properties for class: " + classFromFile.getName());
         }
       }
     }
+  }
+
+  private static Object getInstance(Class<?> classFromFile) throws IllegalAccessException, InstantiationException {
+    return RandomIntAnnotationProcessor.process(classFromFile.newInstance());
   }
 
 }
