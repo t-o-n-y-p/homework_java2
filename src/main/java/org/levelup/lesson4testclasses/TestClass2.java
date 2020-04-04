@@ -1,5 +1,7 @@
 package org.levelup.lesson4testclasses;
 
+import randomint.RandomInt;
+
 public class TestClass2 {
 
   @RandomInt(min = -16, max = 56)

@@ -1,4 +1,4 @@
-package org.levelup.lesson4testclasses;
+package randomint;
 
 import java.lang.reflect.Field;
 import java.util.Random;

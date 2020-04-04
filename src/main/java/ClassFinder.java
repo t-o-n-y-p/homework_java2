@@ -1,4 +1,4 @@
-import org.levelup.lesson4testclasses.RandomIntAnnotationProcessor;
+import randomint.RandomIntAnnotationProcessor;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
