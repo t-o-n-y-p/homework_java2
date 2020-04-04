@@ -10,7 +10,7 @@ public class RandomIntAnnotationProcessor {
       RandomInt annotation = field.getAnnotation(RandomInt.class);
       if (annotation != null) {
         if (isNotInteger(field)) {
-          continue;
+          throw new TypeMismatchException("Incorrect field type: expected int or Integer, got " + field.getType());
         }
         int min = annotation.min();
         int max = annotation.max();
