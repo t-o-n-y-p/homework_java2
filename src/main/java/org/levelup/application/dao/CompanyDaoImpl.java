@@ -96,5 +96,14 @@ public class CompanyDaoImpl implements CompanyDao {
     return result;
   }
 
+  private <T> T runInTransaction(Function<Session, T> function) {
+    Session session = factory.openSession();
+    Transaction transaction = session.beginTransaction();
+    T result = function.apply(session);
+    transaction.commit();
+    session.close();
+    return result;
+  }
+
 
 }
