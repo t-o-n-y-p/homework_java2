@@ -1,105 +1,61 @@
 package org.levelup.hibernate.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.levelup.hibernate.domain.User;
+import org.levelup.hibernate.domain.UserEntity;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Collection;
+import java.util.List;
 
-public class UserService {
+public class UserService implements Dao<UserEntity> {
 
-  private final SessionFactory factory;
-  private final CriteriaBuilder criteriaBuilder;
-
-  public UserService(SessionFactory factory) {
-    this.factory = factory;
-    this.criteriaBuilder = factory.getCriteriaBuilder();
+  public UserEntity createUser(String name, String lastName, String passport) {
+    return runInTransactionWithSingleResult(s -> {
+      UserEntity userEntity = new UserEntity();
+      userEntity.setName(name);
+      userEntity.setLastName(lastName);
+      userEntity.setPassport(passport);
+      s.persist(userEntity);
+      return userEntity;
+    });
   }
 
-  public User createUser(String name, String lastName, String passport) {
-    User user;
-    try (Session session = factory.openSession()) {
-      user = new User();
-      user.setName(name);
-      user.setLastName(lastName);
-      user.setPassport(passport);
-      Transaction transaction = session.beginTransaction();
-      session.persist(user);
-      transaction.commit();
-    }
-    return user;
+  public UserEntity findByPassport(String passport) {
+    List<UserEntity> userEntities = run(
+        s -> s.createQuery("from UserEntity where passport = :passport", UserEntity.class)
+          .setParameter("passport", passport)
+          .getResultList()
+    );
+    return userEntities.isEmpty() ? null : userEntities.get(0);
   }
 
-  public User findByPassport(String passport) {
-    User user;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-      Root<User> userRoot = criteriaQuery.from(User.class);
-      Predicate predicate = criteriaBuilder.equal(userRoot.get("passport"), passport);
-      criteriaQuery
-          .select(userRoot)
-          .where(predicate);
-      user = session.createQuery(criteriaQuery).uniqueResult();
-    }
-    return user;
+  public List<UserEntity> findByLastName(String lastName) {
+    return run(
+        s -> s.createQuery("from UserEntity where last_name = :last_name", UserEntity.class)
+            .setParameter("last_name", lastName)
+            .getResultList()
+    );
   }
 
-  public Collection<User> findByLastName(String lastName) {
-    Collection<User> users;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-      Root<User> userRoot = criteriaQuery.from(User.class);
-      Predicate predicate = criteriaBuilder.equal(userRoot.get("lastName"), lastName);
-      criteriaQuery
-          .select(userRoot)
-          .where(predicate);
-      users = session.createQuery(criteriaQuery).getResultList();
-    }
-    return users;
-  }
-
-  public Collection<User> findByNameAndLastName(String name, String lastName) {
-    Collection<User> users;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-      Root<User> userRoot = criteriaQuery.from(User.class);
-      Predicate predicate = criteriaBuilder.and(
-          criteriaBuilder.equal(userRoot.get("name"), name),
-          criteriaBuilder.equal(userRoot.get("lastName"), lastName)
-      );
-      criteriaQuery
-          .select(userRoot)
-          .where(predicate);
-      users = session.createQuery(criteriaQuery).getResultList();
-    }
-    return users;
+  public List<UserEntity> findByNameAndLastName(String name, String lastName) {
+    return run(
+        s -> s.createQuery("from UserEntity where name = :name and last_name = :last_name", UserEntity.class)
+            .setParameter("name", name)
+            .setParameter("last_name", lastName)
+            .getResultList()
+    );
   }
 
   public void deleteUserByPassport(String passport) {
-    User user = findByPassport(passport);
-    try (Session session = factory.openSession()) {
-      Transaction transaction = session.beginTransaction();
-      session.remove(user);
-      transaction.commit();
-    }
+    delete(
+        s -> s.createQuery("delete UserEntity where passport = :passport")
+            .setParameter("passport", passport)
+            .executeUpdate()
+    );
   }
 
-  public User updateUser(String passport, String newName, String newLastName) {
-    User user = findByPassport(passport);
-    user.setName(newName);
-    user.setLastName(newLastName);
-    User newUser;
-    try (Session session = factory.openSession()) {
-      Transaction transaction = session.beginTransaction();
-      newUser = (User) session.merge(user);
-      transaction.commit();
-    }
-    return newUser;
+  public UserEntity updateUser(String passport, String newName, String newLastName) {
+    UserEntity userEntity = findByPassport(passport);
+    userEntity.setName(newName);
+    userEntity.setLastName(newLastName);
+    return runInTransactionWithSingleResult(s -> (UserEntity) s.merge(userEntity));
   }
 
 }

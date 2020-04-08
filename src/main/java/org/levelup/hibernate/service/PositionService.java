@@ -1,99 +1,62 @@
 package org.levelup.hibernate.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.levelup.hibernate.domain.Position;
+import org.levelup.hibernate.domain.PositionEntity;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Collection;
+import java.util.List;
 
-public class PositionService {
+public class PositionService implements Dao<PositionEntity> {
 
-  private final SessionFactory factory;
-  private final CriteriaBuilder criteriaBuilder;
-
-  public PositionService(SessionFactory factory) {
-    this.factory = factory;
-    this.criteriaBuilder = factory.getCriteriaBuilder();
+  public PositionEntity createPosition(String name) {
+    return runInTransactionWithSingleResult(s -> {
+      PositionEntity positionEntity = new PositionEntity();
+      positionEntity.setName(name);
+      s.persist(positionEntity);
+      return positionEntity;
+    });
   }
 
-  public Position createPosition(String name) {
-    Position position;
-    try (Session session = factory.openSession()) {
-      position = new Position();
-      position.setName(name);
-      Transaction transaction = session.beginTransaction();
-      session.persist(position);
-      transaction.commit();
-    }
-    return position;
+  public PositionEntity findPositionById(Integer id) {
+    return runWithSingleResult(s -> s.get(PositionEntity.class, id));
   }
 
-  public Position findPositionById(Integer id) {
-    Position position;
-    try (Session session = factory.openSession()) {
-      position = session.get(Position.class, id);
-    }
-    return position;
+  public PositionEntity findPositionByName(String name) {
+    List<PositionEntity> positionEntities = run(
+        s -> s.createQuery("from PositionEntity where name = :name", PositionEntity.class)
+            .setParameter("name", name)
+            .getResultList()
+    );
+    return positionEntities.isEmpty() ? null : positionEntities.get(0);
   }
 
-  public Position findPositionByName(String name) {
-    Position position;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
-      Root<Position> positionRoot = criteriaQuery.from(Position.class);
-      Predicate predicate = criteriaBuilder.equal(positionRoot.get("name"), name);
-      criteriaQuery
-          .select(positionRoot)
-          .where(predicate);
-      position = session.createQuery(criteriaQuery).uniqueResult();
-    }
-    return position;
+  public List<PositionEntity> findAllPositions() {
+    return run(
+        s -> s.createQuery("from PositionEntity", PositionEntity.class)
+            .getResultList()
+    );
   }
 
-  public Collection<Position> findAllPositions() {
-    Collection<Position> positions;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
-      Root<Position> positionRoot = criteriaQuery.from(Position.class);
-      criteriaQuery.select(positionRoot);
-      positions = session.createQuery(criteriaQuery).getResultList();
-    }
-    return positions;
-  }
-
-  public Collection<Position> findAllPositionWhichNameLike(String nameMask) {
-    Collection<Position> positions;
-    try (Session session = factory.openSession()) {
-      CriteriaQuery<Position> criteriaQuery = criteriaBuilder.createQuery(Position.class);
-      Root<Position> positionRoot = criteriaQuery.from(Position.class);
-      Predicate predicate = criteriaBuilder.like(positionRoot.get("name"), nameMask);
-      criteriaQuery
-          .select(positionRoot)
-          .where(predicate);
-      positions = session.createQuery(criteriaQuery).getResultList();
-    }
-    return positions;
+  public List<PositionEntity> findAllPositionWhichNameLike(String nameMask) {
+    return run(
+        s -> s.createQuery("from PositionEntity where name like :nameMask", PositionEntity.class)
+            .setParameter("nameMask", nameMask)
+            .getResultList()
+    );
   }
 
   public void deletePositionByName(String name) {
-    deletePosition(findPositionByName(name));
+    delete(
+        s -> s.createQuery("delete PositionEntity where name = :name")
+            .setParameter("name", name)
+            .executeUpdate()
+    );
   }
 
   public void deletePositionById(Integer id) {
-    deletePosition(findPositionById(id));
-  }
-
-  private void deletePosition(Position position) {
-    try (Session session = factory.openSession()) {
-      Transaction transaction = session.beginTransaction();
-      session.remove(position);
-      transaction.commit();
-    }
+    delete(
+        s -> s.createQuery("delete PositionEntity where id = :id")
+            .setParameter("id", id)
+            .executeUpdate()
+    );
   }
 
 }

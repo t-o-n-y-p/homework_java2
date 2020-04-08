@@ -5,10 +5,14 @@ import org.hibernate.cfg.Configuration;
 
 public class JobSessionFactoryConfiguration {
 
-  public SessionFactory configure() {
-    Configuration configuration = new Configuration().configure();
-    SessionFactory factory = configuration.buildSessionFactory();
+  private static final SessionFactory factory = new Configuration().configure().buildSessionFactory();
+
+  public static SessionFactory getFactory() {
     return factory;
+  }
+
+  public static void closeFactory() {
+    factory.close();
   }
 
 }

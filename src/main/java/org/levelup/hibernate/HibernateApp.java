@@ -1,16 +1,14 @@
 package org.levelup.hibernate;
 
-import org.hibernate.SessionFactory;
-import org.levelup.hibernate.domain.Position;
+import org.levelup.hibernate.domain.PositionEntity;
 import org.levelup.hibernate.service.PositionService;
 import org.levelup.hibernate.service.UserService;
 
 public class HibernateApp {
 
   public static void main(String[] args) {
-    SessionFactory factory = new JobSessionFactoryConfiguration().configure();
     System.out.println("UserService test");
-    UserService userService = new UserService(factory);
+    UserService userService = new UserService();
     System.out.println("User added:");
     System.out.println(userService.createUser("Jimmy", "White", "1234 567890"));
     System.out.println("User added once more:");
@@ -30,11 +28,11 @@ public class HibernateApp {
     System.out.println("Users were deleted.");
 
     System.out.println("PositionService test");
-    PositionService positionService = new PositionService(factory);
+    PositionService positionService = new PositionService();
     System.out.println("Initial positions:");
     System.out.println(positionService.findAllPositions());
     System.out.println("Added positions:");
-    Position designer = positionService.createPosition("Designer");
+    PositionEntity designer = positionService.createPosition("Designer");
     System.out.println(positionService.findPositionById(designer.getId()));
     positionService.createPosition("System analyst");
     System.out.println(positionService.findPositionByName("System analyst"));
@@ -49,7 +47,7 @@ public class HibernateApp {
     System.out.println("Remaining positions:");
     System.out.println(positionService.findAllPositions());
 
-    factory.close();
+    JobSessionFactoryConfiguration.closeFactory();
   }
 
 }

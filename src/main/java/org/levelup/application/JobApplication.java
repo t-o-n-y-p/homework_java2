@@ -10,13 +10,13 @@ public class JobApplication {
 
   public static void main(String[] args) {
 
-    SessionFactory factory = new JobSessionFactoryConfiguration().configure();
-    CompanyDao companyDao = new CompanyDaoImpl(factory);
-
-    CompanyEntity entity = companyDao.findByEin("5398694056");
-    System.out.println(entity);
-
-    factory.close();
+//    SessionFactory factory = new JobSessionFactoryConfiguration().configure();
+//    CompanyDao companyDao = new CompanyDaoImpl(factory);
+//
+//    CompanyEntity entity = companyDao.findByEin("5398694056");
+//    System.out.println(entity);
+//
+//    factory.close();
 
   }
 
