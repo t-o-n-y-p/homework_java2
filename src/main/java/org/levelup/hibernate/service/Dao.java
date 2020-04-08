@@ -53,12 +53,4 @@ public interface Dao<T> {
     session.close();
   }
 
-  default void update(Consumer<Session> function) {
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-    function.accept(session);
-    transaction.commit();
-    session.close();
-  }
-
 }
