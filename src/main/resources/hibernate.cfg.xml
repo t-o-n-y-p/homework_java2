@@ -19,6 +19,8 @@
         <mapping class="org.levelup.hibernate.domain.UserEntity" />
         <mapping class="org.levelup.hibernate.domain.PositionEntity" />
         <mapping class="org.levelup.application.domain.CompanyEntity" />
+        <mapping class="org.levelup.application.domain.CompanyLegalDetailsEntity" />
+        <mapping class="org.levelup.application.domain.UserAddressesEntity" />
 
     </session-factory>
 </hibernate-configuration>

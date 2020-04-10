@@ -1,14 +1,15 @@
 package org.levelup.hibernate.domain;
 
 import lombok.*;
+import org.levelup.application.domain.UserAddressesEntity;
 
 import javax.persistence.*;
+import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@ToString
 public class UserEntity {
 
   @Id
@@ -20,5 +21,9 @@ public class UserEntity {
   private String lastName;
   @Column(length = 50, nullable = false, unique = true)
   private String passport;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id")
+  private List<UserAddressesEntity> addresses;
 
 }

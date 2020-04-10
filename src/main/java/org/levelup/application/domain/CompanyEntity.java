@@ -20,5 +20,8 @@ public class CompanyEntity {
   private String ein;
   @Column(nullable = false)
   private String address;
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "id")
+  private CompanyLegalDetailsEntity legalDetails;
 
 }
