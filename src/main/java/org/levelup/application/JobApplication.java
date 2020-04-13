@@ -43,10 +43,11 @@ public class JobApplication {
     String login = sc.nextLine();
     System.out.print("Enter password: ");
     String password = sc.nextLine();
-    try {
-      System.out.println("Hello " + authDetailsDao.logIn(login, password).getName() + "!");
-    } catch (NullPointerException e) {
+    UserEntity user = authDetailsDao.logIn(login, password);
+    if (user == null) {
       System.out.println("Name or password are incorrect.");
+    } else {
+      System.out.println("Hello " + user.getName() + " " + user.getLastName() + "!");
     }
 
     JobSessionFactoryConfiguration.closeFactory();
