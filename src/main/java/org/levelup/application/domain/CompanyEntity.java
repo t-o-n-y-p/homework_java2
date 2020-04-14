@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,8 +21,26 @@ public class CompanyEntity {
   private String ein;
   @Column(nullable = false)
   private String address;
+
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "id")
   private CompanyLegalDetailsEntity legalDetails;
 
+  @ManyToMany
+  @JoinTable(
+      name = "company_positions",
+      joinColumns = @JoinColumn(name = "company_id"),
+      inverseJoinColumns = @JoinColumn(name = "position_id")
+  )
+  private List<PositionEntity> positions;
+
+  @Override
+  public String toString() {
+    return "CompanyEntity{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", ein='" + ein + '\'' +
+        ", address='" + address + '\'' +
+        '}';
+  }
 }

@@ -1,6 +1,6 @@
 package org.levelup.hibernate;
 
-import org.levelup.hibernate.domain.PositionEntity;
+import org.levelup.application.domain.PositionEntity;
 import org.levelup.hibernate.service.PositionService;
 import org.levelup.hibernate.service.UserService;
 

@@ -2,7 +2,7 @@ package org.levelup.application.dao;
 
 import org.hibernate.SessionFactory;
 import org.levelup.application.domain.AuthDetailsEntity;
-import org.levelup.hibernate.domain.UserEntity;
+import org.levelup.application.domain.UserEntity;
 
 import java.util.List;
 

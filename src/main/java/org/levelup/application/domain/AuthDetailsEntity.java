@@ -2,7 +2,6 @@ package org.levelup.application.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.levelup.hibernate.domain.UserEntity;
 
 import javax.persistence.*;
 

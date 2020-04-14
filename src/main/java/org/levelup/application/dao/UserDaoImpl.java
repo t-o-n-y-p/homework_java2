@@ -2,7 +2,7 @@ package org.levelup.application.dao;
 
 import org.hibernate.SessionFactory;
 import org.levelup.application.domain.UserAddressesEntity;
-import org.levelup.hibernate.domain.UserEntity;
+import org.levelup.application.domain.UserEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,7 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
           .map(address -> {
             UserAddressesEntity userAddressesEntity = new UserAddressesEntity();
             userAddressesEntity.setAddress(address);
-            userAddressesEntity.setUser(user);
+            // userAddressesEntity.setUser(user);
             return userAddressesEntity;
           })
           .collect(Collectors.toList());

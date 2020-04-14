@@ -1,6 +1,6 @@
 package org.levelup.application.dao;
 
-import org.levelup.hibernate.domain.UserEntity;
+import org.levelup.application.domain.UserEntity;
 
 import java.util.Collection;
 

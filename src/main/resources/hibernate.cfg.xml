@@ -16,12 +16,13 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
-        <mapping class="org.levelup.hibernate.domain.UserEntity" />
-        <mapping class="org.levelup.hibernate.domain.PositionEntity" />
+        <mapping class="org.levelup.application.domain.UserEntity" />
         <mapping class="org.levelup.application.domain.CompanyEntity" />
         <mapping class="org.levelup.application.domain.CompanyLegalDetailsEntity" />
         <mapping class="org.levelup.application.domain.UserAddressesEntity" />
         <mapping class="org.levelup.application.domain.AuthDetailsEntity" />
+        <mapping class="org.levelup.application.domain.PositionEntity" />
+        <mapping class="org.levelup.application.domain.JobListEntity" />
 
     </session-factory>
 </hibernate-configuration>

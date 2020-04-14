@@ -1,13 +1,12 @@
-package org.levelup.hibernate.domain;
+package org.levelup.application.domain;
 
 import lombok.*;
-import org.levelup.application.domain.AuthDetailsEntity;
-import org.levelup.application.domain.UserAddressesEntity;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
@@ -24,9 +23,18 @@ public class UserEntity {
   private String passport;
 
   @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   private List<UserAddressesEntity> addresses;
   @OneToOne(mappedBy = "user")
   private AuthDetailsEntity authDetails;
 
+  @Override
+  public String toString() {
+    return "UserEntity{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", lastName='" + lastName + '\'' +
+        ", passport='" + passport + '\'' +
+        '}';
+  }
 }
