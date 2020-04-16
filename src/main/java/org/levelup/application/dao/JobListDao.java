@@ -10,6 +10,9 @@ public interface JobListDao {
       Integer companyId, Integer userId, Integer positionId, LocalDate startDate, LocalDate endDate
   );
   JobListEntity findJobRecord(Integer companyId, Integer userId, Integer positionId);
-
+  JobListEntity updateJobRecord(
+      Integer companyId, Integer userId, Integer positionId, LocalDate startDate, LocalDate endDate
+  );
+  JobListEntity updateJobRecord(JobListEntity jobRecord, LocalDate startDate, LocalDate endDate);
 
 }

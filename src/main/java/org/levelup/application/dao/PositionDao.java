@@ -5,5 +5,6 @@ import org.levelup.application.domain.PositionEntity;
 public interface PositionDao {
 
   PositionEntity createPosition(String name);
+  PositionEntity findByName(String name);
 
 }

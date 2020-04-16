@@ -16,13 +16,14 @@ public class CompanyDaoImpl extends AbstractDao implements CompanyDao {
   }
 
   @Override
-  public void create(String name, String ein, String address) {
-    runInTransaction(s -> {
+  public CompanyEntity createCompany(String name, String ein, String address) {
+    return runInTransaction(s -> {
       CompanyEntity entity = new CompanyEntity();
       entity.setName(name);
       entity.setEin(ein);
       entity.setAddress(address);
       s.persist(entity);
+      return entity;
     });
   }
 
@@ -40,13 +41,12 @@ public class CompanyDaoImpl extends AbstractDao implements CompanyDao {
 
   @Override
   public CompanyEntity findByEin(String ein) {
-
-    return runWithoutTransaction(s -> {
-        return s.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
+    List<CompanyEntity> entities = runWithoutTransaction(
+        s -> s.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
             .setParameter("ein", ein)
-            .getSingleResult();
-    });
-
+            .getResultList()
+    );
+    return entities.isEmpty() ? null : entities.get(0);
   }
 
   @Override
@@ -57,6 +57,24 @@ public class CompanyDaoImpl extends AbstractDao implements CompanyDao {
           .getResultList();
     });
     return entities.isEmpty() ? null : entities.get(0);
+  }
+
+  @Override
+  public CompanyEntity updateCompany(String ein, String name, String address) {
+    CompanyEntity company = findByEin(ein);
+    return updateCompany(company, name, address);
+  }
+
+  @Override
+  public CompanyEntity updateCompany(CompanyEntity company, String name, String address) {
+    if (company == null) {
+      return null;
+    }
+    return runInTransaction(s -> {
+      company.setName(name);
+      company.setAddress(address);
+      return (CompanyEntity) s.merge(company);
+    });
   }
 
 //  @SneakyThrows

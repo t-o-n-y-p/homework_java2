@@ -32,4 +32,23 @@ public class JobListDaoImpl extends AbstractDao implements JobListDao {
     return runWithoutTransaction(s -> s.get(JobListEntity.class, new JobListId(companyId, positionId, userId)));
   }
 
+  @Override
+  public JobListEntity updateJobRecord(
+      Integer companyId, Integer userId, Integer positionId, LocalDate startDate, LocalDate endDate
+  ) {
+    JobListEntity jobRecord = findJobRecord(companyId, userId, positionId);
+    return updateJobRecord(jobRecord, startDate, endDate);
+  }
+
+  @Override
+  public JobListEntity updateJobRecord(JobListEntity jobRecord, LocalDate startDate, LocalDate endDate) {
+    if (jobRecord == null) {
+      return null;
+    }
+    return runInTransaction(s -> {
+      jobRecord.setStartDate(startDate);
+      jobRecord.setEndDate(endDate);
+      return (JobListEntity) s.merge(jobRecord);
+    });
+  }
 }
