@@ -130,9 +130,8 @@ public class JobApplication {
     LocalDate startDate = LocalDate.of(sc.nextInt(), sc.nextInt(), sc.nextInt());
     LocalDate endDate = null;
     System.out.print("Are you still working here? ");
-    // if (Answer.getAnswer(sc.nextLine()) == Answer.NO) { - why this doesn't work?
-    String answer = sc.nextLine();
-    if (Answer.getAnswer(answer) == Answer.NO) {
+    sc = new Scanner(System.in);
+    if (Answer.getAnswer(sc.nextLine()) == Answer.NO) {
       System.out.println("Enter year, month and day of the end date: ");
       endDate = LocalDate.of(sc.nextInt(), sc.nextInt(), sc.nextInt());
     }
@@ -151,9 +150,8 @@ public class JobApplication {
       return jobRecord;
     } else {
       System.out.print("Job record already exists. Update existing job record? ");
-      // if (Answer.getAnswer(sc.nextLine()) == Answer.YES) {
-      answer = sc.nextLine();
-      if (Answer.getAnswer(answer) == Answer.YES) {
+      sc = new Scanner(System.in);
+      if (Answer.getAnswer(sc.nextLine()) == Answer.YES) {
         JobListEntity updatedJobRecord = jobListDao.updateJobRecord(jobRecord, startDate, endDate);
         System.out.println("Job record updated.");
         return updatedJobRecord;
