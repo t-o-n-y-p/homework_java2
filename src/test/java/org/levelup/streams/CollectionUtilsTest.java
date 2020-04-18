@@ -37,7 +37,7 @@ class CollectionUtilsTest {
 
   @Test
   public void testRemoveLongStrings_whenNegativeMaxLength_returnEmptyCollection() {
-    Collection<String> originalCollection = new ArrayList<>(Arrays.asList("String1", "Long string"));
+    Collection<String> originalCollection = new ArrayList<>(Arrays.asList("", "1", "String1", "Long string"));
     Collection<String> originalCollectionCopy = new ArrayList<>(originalCollection);
 
     Collection<String> actualResult = CollectionUtils.removeLongStrings(originalCollection, -10);
