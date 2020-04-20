@@ -27,8 +27,10 @@ public class JobApplication {
 //        "address 1", "address2", "address3"
 //    )));
 //
-//    PositionDao positionDao = new PositionDaoImpl(JobSessionFactoryConfiguration.getFactory());
-//    Integer positionId = positionDao.createPosition("Product Owner 232").getId();
+    PositionDao positionDao = new PositionDaoImpl(JobSessionFactoryConfiguration.getFactory());
+    PositionEntity nullPosition = positionDao.findByName(null);
+    System.out.println(nullPosition);
+//    Integer positionId = positionDao.createPosition(" ").getId();
 //
 //    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
 //    jobListDao.createJobRecord(
