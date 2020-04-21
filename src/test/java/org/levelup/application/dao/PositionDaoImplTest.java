@@ -48,14 +48,14 @@ class PositionDaoImplTest {
 
   @Test
   public void testCreatePosition_existingPositionName_throwsPersistenceException() {
-    doThrow(PersistenceException.class).when(session).persist(ArgumentMatchers.any(PositionEntity.class));
+    doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     String name = "position name";
     assertThrows(PersistenceException.class, () -> dao.createPosition(name));
   }
 
   @Test
   public void testCreatePosition_positionNameIsNull_throwsPersistenceException() {
-    doThrow(PersistenceException.class).when(session).persist(ArgumentMatchers.any(PositionEntity.class));
+    doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     assertThrows(PersistenceException.class, () -> dao.createPosition(null));
   }
 
