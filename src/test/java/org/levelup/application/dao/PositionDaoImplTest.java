@@ -47,20 +47,20 @@ class PositionDaoImplTest {
   }
 
   @Test
-  public void testCreatePosition_existingPositionName_throwsPersistenceException() {
+  public void testCreatePosition_whenPositionNameExists_thenThrowPersistenceException() {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     String name = "position name";
     assertThrows(PersistenceException.class, () -> dao.createPosition(name));
   }
 
   @Test
-  public void testCreatePosition_positionNameIsNull_throwsPersistenceException() {
+  public void testCreatePosition_whenPositionNameIsNull_thenThrowPersistenceException() {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     assertThrows(PersistenceException.class, () -> dao.createPosition(null));
   }
 
   @Test
-  public void testCreatePosition_positionNameDoesNotExist_persistNewPosition() {
+  public void testCreatePosition_whenPositionNameDoesNotExist_persistNewPosition() {
     String name = "position name";
     PositionEntity entity = dao.createPosition(name);
     assertEquals(name, entity.getName());
@@ -70,7 +70,7 @@ class PositionDaoImplTest {
   }
 
   @Test
-  public void testFindByName_nameIsNull_returnNull() {
+  public void testFindByName_whenNameIsNull_returnNull() {
     List<PositionEntity> expectedResultList = new ArrayList<>();
     when(query.getResultList()).thenReturn(expectedResultList);
 
@@ -86,7 +86,7 @@ class PositionDaoImplTest {
   }
 
   @Test
-  public void testFindByName_nameDoesNotExist_returnNull() {
+  public void testFindByName_whenNameDoesNotExist_returnNull() {
     String name = "position name";
     List<PositionEntity> expectedResultList = new ArrayList<>();
     when(query.getResultList()).thenReturn(expectedResultList);
@@ -103,7 +103,7 @@ class PositionDaoImplTest {
   }
 
   @Test
-  public void testFindByName_existingName_returnPositionEntity() {
+  public void testFindByName_whenNameExists_persistNewPosition() {
     String name = "position name";
     List<PositionEntity> expectedResultList = new ArrayList<>();
     PositionEntity expectedResult = new PositionEntity();

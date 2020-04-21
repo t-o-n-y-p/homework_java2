@@ -21,14 +21,14 @@ class CollectionUtilsTest {
   }
 
   @Test
-  public void testRemoveLongStrings_whenCollectionIsNull_throwNullPointerException() {
+  public void testRemoveLongStrings_whenCollectionIsNull_thenThrowNullPointerException() {
     assertThrows(
         NullPointerException.class, () -> CollectionUtils.removeLongStrings(null, 10)
     );
   }
 
   @Test
-  public void testRemoveLongStrings_whenCollectionContainsNull_throwNullPointerException() {
+  public void testRemoveLongStrings_whenCollectionContainsNull_thenThrowNullPointerException() {
     Collection<String> originalCollection = new ArrayList<>(Arrays.asList(null, "Long string"));
     assertThrows(
         NullPointerException.class, () -> CollectionUtils.removeLongStrings(originalCollection, 10)
