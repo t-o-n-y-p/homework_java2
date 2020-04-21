@@ -47,6 +47,19 @@ class PositionDaoImplTest {
   }
 
   @Test
+  public void testCreatePosition_existingPositionName_throwsPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(ArgumentMatchers.any(PositionEntity.class));
+    String name = "position name";
+    assertThrows(PersistenceException.class, () -> dao.createPosition(name));
+  }
+
+  @Test
+  public void testCreatePosition_positionNameIsNull_throwsPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(ArgumentMatchers.any(PositionEntity.class));
+    assertThrows(PersistenceException.class, () -> dao.createPosition(null));
+  }
+
+  @Test
   public void testCreatePosition_positionNameDoesNotExist_persistNewPosition() {
     String name = "position name";
     PositionEntity entity = dao.createPosition(name);
@@ -54,19 +67,6 @@ class PositionDaoImplTest {
     verify(session).persist(any(PositionEntity.class));
     verify(transaction, times(1)).commit();
     verify(session, times(1)).close();
-  }
-
-  @Test
-  public void testCreatePosition_existingPositionName_throwsPersistenceException() {
-    //doThrow(PersistenceException.class).when(session.persist(ArgumentMatchers.any(PositionEntity.class)));
-    String name = "position name";
-    assertThrows(PersistenceException.class, () -> dao.createPosition(name));
-  }
-
-  @Test
-  public void testCreatePosition_positionNameIsNull_throwsPersistenceException() {
-    //doThrow(PersistenceException.class).when(session.persist(ArgumentMatchers.any(PositionEntity.class)));
-    assertThrows(PersistenceException.class, () -> dao.createPosition(null));
   }
 
   @Test
