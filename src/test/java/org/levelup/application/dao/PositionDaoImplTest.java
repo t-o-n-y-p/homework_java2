@@ -31,11 +31,6 @@ class PositionDaoImplTest {
   @InjectMocks
   private PositionDaoImpl dao;
 
-  @BeforeAll
-  public static void beforeAll() {
-    System.out.println("Before all");
-  }
-
   @BeforeEach
   public void initialize() {
     MockitoAnnotations.initMocks(this);
@@ -47,6 +42,16 @@ class PositionDaoImplTest {
   }
 
   @Test
+  @DisplayName("Create: Position name too long")
+  public void testCreatePosition_whenPositionNameTooLong_thenThrowPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
+    String name = "position name position name position name position name " +
+        "position name position name position name position name";
+    assertThrows(PersistenceException.class, () -> dao.createPosition(name));
+  }
+
+  @Test
+  @DisplayName("Create: Position is already added")
   public void testCreatePosition_whenPositionNameExists_thenThrowPersistenceException() {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     String name = "position name";
@@ -54,12 +59,14 @@ class PositionDaoImplTest {
   }
 
   @Test
+  @DisplayName("Create: Position name is null")
   public void testCreatePosition_whenPositionNameIsNull_thenThrowPersistenceException() {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     assertThrows(PersistenceException.class, () -> dao.createPosition(null));
   }
 
   @Test
+  @DisplayName("Create: Position does not exist")
   public void testCreatePosition_whenPositionNameDoesNotExist_persistNewPosition() {
     String name = "position name";
     PositionEntity entity = dao.createPosition(name);
@@ -70,22 +77,31 @@ class PositionDaoImplTest {
   }
 
   @Test
+  @DisplayName("Find by name: Position name too long")
+  public void testFindByName_whenNameTooLong_returnNull() {
+    String name = "position name position name position name position name " +
+        "position name position name position name position name";
+    List<PositionEntity> expectedResultList = new ArrayList<>();
+    when(query.getResultList()).thenReturn(expectedResultList);
+
+    PositionEntity actualResult = dao.findByName(name);
+    assertNull(actualResult);
+    verifyFindByNameCalls(name);
+  }
+
+  @Test
+  @DisplayName("Find by name: Position name is null")
   public void testFindByName_whenNameIsNull_returnNull() {
     List<PositionEntity> expectedResultList = new ArrayList<>();
     when(query.getResultList()).thenReturn(expectedResultList);
 
     PositionEntity actualResult = dao.findByName(null);
     assertNull(actualResult);
-    verify(session, times(1))
-        .createQuery("from PositionEntity where name = :name", PositionEntity.class);
-    verify(query, times(1)).setParameter("name", null);
-    verify(query, times(1)).getResultList();
-    verify(session, times(1)).close();
-
-    when(query.getResultList()).thenReturn(null);
+    verifyFindByNameCalls(null);
   }
 
   @Test
+  @DisplayName("Find by name: Position does not exist")
   public void testFindByName_whenNameDoesNotExist_returnNull() {
     String name = "position name";
     List<PositionEntity> expectedResultList = new ArrayList<>();
@@ -93,17 +109,12 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(name);
     assertNull(actualResult);
-    verify(session, times(1))
-        .createQuery("from PositionEntity where name = :name", PositionEntity.class);
-    verify(query, times(1)).setParameter("name", name);
-    verify(query, times(1)).getResultList();
-    verify(session, times(1)).close();
-
-    when(query.getResultList()).thenReturn(null);
+    verifyFindByNameCalls(name);
   }
 
   @Test
-  public void testFindByName_whenNameExists_persistNewPosition() {
+  @DisplayName("Find by name: Position exists")
+  public void testFindByName_whenNameExists_returnPosition() {
     String name = "position name";
     List<PositionEntity> expectedResultList = new ArrayList<>();
     PositionEntity expectedResult = new PositionEntity();
@@ -113,13 +124,7 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(name);
     assertEquals(expectedResult, actualResult);
-    verify(session, times(1))
-        .createQuery("from PositionEntity where name = :name", PositionEntity.class);
-    verify(query, times(1)).setParameter("name", name);
-    verify(query, times(1)).getResultList();
-    verify(session, times(1)).close();
-
-    when(query.getResultList()).thenReturn(null);
+    verifyFindByNameCalls(name);
   }
 
   @AfterEach
@@ -127,9 +132,12 @@ class PositionDaoImplTest {
     dao = null;
   }
 
-  @AfterAll
-  public static void afterAll() {
-    System.out.println("After all");
+  private void verifyFindByNameCalls(String name) {
+    verify(session, times(1))
+        .createQuery(eq("from PositionEntity where name = :name"), eq(PositionEntity.class));
+    verify(query, times(1)).setParameter(eq("name"), eq(name));
+    verify(query, times(1)).getResultList();
+    verify(session, times(1)).close();
   }
 
 }

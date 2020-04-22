@@ -28,7 +28,7 @@ public class JobApplication {
 //    )));
 //
     PositionDao positionDao = new PositionDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    PositionEntity nullPosition = positionDao.findByName(null);
+    PositionEntity nullPosition = positionDao.findByName("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
     System.out.println(nullPosition);
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
