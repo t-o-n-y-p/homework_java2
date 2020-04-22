@@ -14,7 +14,7 @@ create table companies (
 
 create table positions (
 	id serial primary key,
-	name varchar not null unique
+	name varchar(100) not null unique
 );
 
 create table job_list (

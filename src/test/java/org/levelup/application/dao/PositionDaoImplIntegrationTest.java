@@ -48,7 +48,7 @@ public class PositionDaoImplIntegrationTest {
 
   @Test
   @DisplayName("Create: Position does not exist")
-  public void testCreatePosition_whenPositionNameDoesNotExist_persistNewPosition() {
+  public void testCreatePosition_whenPositionNameDoesNotExist_thenPersistNewPosition() {
     String name = "position name";
     PositionEntity actualResult = positionDao.createPosition(name);
     assertNotNull(actualResult.getId());
@@ -59,7 +59,7 @@ public class PositionDaoImplIntegrationTest {
 
   @Test
   @DisplayName("Find by name: Position name too long")
-  public void testFindByName_whenNameTooLong_returnNull() {
+  public void testFindByName_whenNameTooLong_thenReturnNull() {
     String name = "position name position name position name position name " +
         "position name position name position name position name";
     PositionEntity actualResult = positionDao.findByName(name);
@@ -68,14 +68,14 @@ public class PositionDaoImplIntegrationTest {
 
   @Test
   @DisplayName("Find by name: Position name is null")
-  public void testFindByName_whenNameIsNull_returnNull() {
+  public void testFindByName_whenNameIsNull_thenReturnNull() {
     PositionEntity actualResult = positionDao.findByName(null);
     assertNull(actualResult);
   }
 
   @Test
   @DisplayName("Find by name: Position does not exist")
-  public void testFindByName_whenNameDoesNotExist_returnNull() {
+  public void testFindByName_whenNameDoesNotExist_thenReturnNull() {
     String name = "position name";
     PositionEntity actualResult = positionDao.findByName(name);
     assertNull(actualResult);
@@ -83,7 +83,7 @@ public class PositionDaoImplIntegrationTest {
 
   @Test
   @DisplayName("Find by name: Position exists")
-  public void testFindByName_whenNameExists_persistNewPosition() {
+  public void testFindByName_whenNameExists_thenReturnPosition() {
     String name = "position name";
     PositionEntity expectedResult = positionDao.createPosition(name);
     PositionEntity actualResult = positionDao.findByName(name);
@@ -100,11 +100,11 @@ public class PositionDaoImplIntegrationTest {
   private void clearEnvironment() {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    PositionEntity fromDb = session.createQuery("from PositionEntity where name = :name", PositionEntity.class)
+    PositionEntity position = session.createQuery("from PositionEntity where name = :name", PositionEntity.class)
         .setParameter("name", "position name")
         .getSingleResult();
-    assertNotNull(fromDb);
-    session.remove(fromDb);
+    assertNotNull(position);
+    session.remove(position);
     transaction.commit();
     session.close();
   }

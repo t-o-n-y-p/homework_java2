@@ -14,9 +14,9 @@ public class AuthDetailsEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  @Column(nullable = false, unique = true)
+  @Column(length = 100, nullable = false, unique = true)
   private String login;
-  @Column(nullable = false)
+  @Column(length = 50, nullable = false)
   private String password;
 
   @OneToOne(cascade = CascadeType.ALL)

@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = {"id", "name", "lastName", "passport"})
 @Table(name = "users")
 public class UserEntity {
 
