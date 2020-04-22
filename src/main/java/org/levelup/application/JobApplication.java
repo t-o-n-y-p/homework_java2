@@ -4,7 +4,9 @@ import org.levelup.application.dao.*;
 import org.levelup.application.domain.*;
 import org.levelup.hibernate.JobSessionFactoryConfiguration;
 
+import javax.persistence.PersistenceException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
@@ -22,14 +24,23 @@ public class JobApplication {
 //    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
 //    Integer companyId = companyDao.findByEin("8987332").getId();
 //
-//    UserDao userDao = new UserDaoImpl(JobSessionFactoryConfiguration.getFactory());
-//    UserEntity user = userDao.createUser("User1", "Last2", "1113332 433", new ArrayList<>(Arrays.asList(
-//        "address 1", "address2", "address3"
-//    )));
+    UserDao userDao = new UserDaoImpl(JobSessionFactoryConfiguration.getFactory());
+    UserEntity user22 = userDao.createUser("User1", "Last2", "1113332 43333", new ArrayList<>(Arrays.asList(
+        "address 1", "address2", "address3"
+    )));
 //
-    PositionDao positionDao = new PositionDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    PositionEntity nullPosition = positionDao.findByName("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-    System.out.println(nullPosition);
+    String name1 = "user name";
+    String lastName1 = "user last name";
+    String passport1 = "user passport";
+    String tooLongAddress1 = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    Collection<String> addresses = new ArrayList<>(Arrays.asList(tooLongAddress1, "10 Downing St."));
+
+    userDao.createUser(name1, lastName1, passport1, addresses);
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
 //    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());

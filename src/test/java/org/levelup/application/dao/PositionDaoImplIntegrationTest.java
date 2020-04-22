@@ -9,6 +9,8 @@ import org.levelup.configuration.HibernateTestConfiguration;
 
 import javax.persistence.PersistenceException;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PositionDaoImplIntegrationTest {
@@ -22,12 +24,18 @@ public class PositionDaoImplIntegrationTest {
     positionDao = new PositionDaoImpl(factory);
   }
 
+  @AfterAll
+  static void closeFactory() {
+    HibernateTestConfiguration.close();
+  }
+
   @Test
   @DisplayName("Create: Position name too long")
   public void testCreatePosition_whenPositionNameTooLong_thenThrowPersistenceException() {
     String name = "position name position name position name position name " +
         "position name position name position name position name";
     assertThrows(PersistenceException.class, () -> positionDao.createPosition(name));
+    assertPositionDoesNotExist();
   }
 
   @Test
@@ -44,6 +52,7 @@ public class PositionDaoImplIntegrationTest {
   @DisplayName("Create: Position name is null")
   public void testCreatePosition_whenPositionNameIsNull_thenThrowPersistenceException() {
     assertThrows(PersistenceException.class, () -> positionDao.createPosition(null));
+    assertPositionDoesNotExist();
   }
 
   @Test
@@ -92,11 +101,6 @@ public class PositionDaoImplIntegrationTest {
     clearEnvironment();
   }
 
-  @AfterAll
-  static void closeFactory() {
-    HibernateTestConfiguration.close();
-  }
-
   private void clearEnvironment() {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
@@ -106,6 +110,16 @@ public class PositionDaoImplIntegrationTest {
     assertNotNull(position);
     session.remove(position);
     transaction.commit();
+    session.close();
+  }
+
+  private void assertPositionDoesNotExist() {
+    Session session = factory.openSession();
+    List<PositionEntity> positions = session.createQuery(
+        "from PositionEntity where name = :name", PositionEntity.class
+    ).setParameter("name", "position name")
+        .getResultList();
+    assertTrue(positions.isEmpty());
     session.close();
   }
 
