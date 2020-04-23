@@ -49,12 +49,12 @@ class UserDaoImplTest {
 
   @Test
   @DisplayName("Create user: Name is null")
-  public void testCreateUser_whenNameIsNull_thenThrowNullPointerException() {
-    doThrow(NullPointerException.class).when(session).persist(any(UserEntity.class));
+  public void testCreateUser_whenNameIsNull_thenThrowPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(any(UserEntity.class));
     String lastName = "user last name";
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
-    assertThrows(NullPointerException.class, () -> dao.createUser(null, lastName, passport, addresses));
+    assertThrows(PersistenceException.class, () -> dao.createUser(null, lastName, passport, addresses));
   }
 
   @Test
@@ -71,12 +71,12 @@ class UserDaoImplTest {
 
   @Test
   @DisplayName("Create user: Last name is null")
-  public void testCreateUser_whenLastNameIsNull_thenThrowNullPointerException() {
-    doThrow(NullPointerException.class).when(session).persist(any(UserEntity.class));
+  public void testCreateUser_whenLastNameIsNull_thenThrowPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(any(UserEntity.class));
     String name = "user name";
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
-    assertThrows(NullPointerException.class, () -> dao.createUser(name, null, passport, addresses));
+    assertThrows(PersistenceException.class, () -> dao.createUser(name, null, passport, addresses));
   }
 
   @Test
@@ -93,12 +93,12 @@ class UserDaoImplTest {
 
   @Test
   @DisplayName("Create user: Passport is null")
-  public void testCreateUser_whenPassportIsNull_thenThrowNullPointerException() {
-    doThrow(NullPointerException.class).when(session).persist(any(UserEntity.class));
+  public void testCreateUser_whenPassportIsNull_thenThrowPersistenceException() {
+    doThrow(PersistenceException.class).when(session).persist(any(UserEntity.class));
     String name = "user name";
     String lastName = "user last name";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
-    assertThrows(NullPointerException.class, () -> dao.createUser(name, lastName, null, addresses));
+    assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, null, addresses));
   }
 
   @Test
