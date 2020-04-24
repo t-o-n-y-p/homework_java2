@@ -8,11 +8,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.levelup.application.domain.CompanyEntity;
-import org.levelup.application.domain.PositionEntity;
 import org.levelup.configuration.HibernateTestConfiguration;
 
 import javax.persistence.PersistenceException;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,14 +120,193 @@ public class CompanyDaoImplIntegrationTest {
     assertThrows(IllegalArgumentException.class, () -> companyDao.findById(null));
   }
 
+  @Test
+  @DisplayName("Find by ID: Company does not exist")
+  public void testFindById_whenIdDoesNotExist_thenReturnNull() {
+    Integer id = 1;
+    CompanyEntity actualResult = companyDao.findById(id);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Find by ID: Company exists")
+  public void testFindById_whenIdExists_thenReturnCompany() {
+    CompanyEntity expectedResult = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
+    Integer id = expectedResult.getId();
+    CompanyEntity actualResult = companyDao.findById(id);
+    assertEquals(expectedResult, actualResult);
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Find by ein: Ein is null")
+  public void testFindByEin_whenEinIsNull_thenReturnNull() {
+    CompanyEntity actualResult = companyDao.findByEin(null);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Find by ein: Ein does not exist")
+  public void testFindByEin_whenEinDoesNotExist_thenReturnNull() {
+    String ein = "company ein";
+    CompanyEntity actualResult = companyDao.findByEin(ein);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Find by ein: Ein is too long")
+  public void testFindByEin_whenEinIsTooLong_thenReturnNull() {
+    String ein = "company ein company ein company ein company ein company ein company ein company ein company ein";
+    CompanyEntity actualResult = companyDao.findByEin(ein);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Find by ein: Ein exists")
+  public void testFindByEin_whenEinExists_thenReturnCompany() {
+    String ein = "company ein";
+    CompanyEntity expectedResult = companyDao.createCompany("company name", ein, "company address");
+    CompanyEntity actualResult = companyDao.findByEin(ein);
+    assertEquals(expectedResult, actualResult);
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Find by name: Name is null")
+  public void testFindByName_whenNameIsNull_thenReturnNull() {
+    Collection<CompanyEntity> actualResult = companyDao.findByName(null);
+    assertTrue(actualResult.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Find by name: Name does not exist")
+  public void testFindByName_whenNameDoesNotExist_thenReturnNull() {
+    String name = "company name";
+    Collection<CompanyEntity> actualResult = companyDao.findByName(name);
+    assertTrue(actualResult.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Find by name: Name is too long")
+  public void testFindByName_whenNameIsTooLong_thenReturnNull() {
+    String name = "company name company name company name company name company name company name " +
+        "company name company name company name";
+    Collection<CompanyEntity> actualResult = companyDao.findByName(name);
+    assertTrue(actualResult.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Find by name: Name exists")
+  public void testFindByName_whenNameExists_thenReturnCompany() {
+    String name = "company name";
+    CompanyEntity company = companyDao.createCompany(name, "company ein", "company address");
+    Collection<CompanyEntity> expectedResult = new ArrayList<>();
+    expectedResult.add(company);
+
+    Collection<CompanyEntity> actualResult = companyDao.findByName(name);
+    assertEquals(expectedResult, actualResult);
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Ein is null")
+  public void testUpdateCompany_whenEinIsNull_thenReturnNull() {
+    String name = "company name";
+    String address = "company address";
+    CompanyEntity actualResult = companyDao.updateCompany(null, name, address);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Ein does not exist")
+  public void testUpdateCompany_whenEinDoesNotExist_thenReturnNull() {
+    String ein = "company ein";
+    String name = "company name";
+    String address = "company address";
+    CompanyEntity actualResult = companyDao.updateCompany(ein, name, address);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Ein is too long")
+  public void testUpdateCompany_whenEinIsTooLong_thenReturnNull() {
+    String ein = "company ein company ein company ein company ein company ein company ein company ein";
+    String name = "company name";
+    String address = "company address";
+    CompanyEntity actualResult = companyDao.updateCompany(ein, name, address);
+    assertNull(actualResult);
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Ein exists")
+  public void testUpdateCompany_whenEinExists_thenMergeCompany() {
+    String ein = "company ein";
+    String name = "company name";
+    String address = "company address";
+    CompanyEntity company = companyDao.createCompany("name", ein, "address");
+    CompanyEntity expectedResult = new CompanyEntity();
+    expectedResult.setId(company.getId());
+    expectedResult.setName(name);
+    expectedResult.setEin(ein);
+    expectedResult.setAddress(address);
+
+    CompanyEntity actualResult = companyDao.updateCompany(ein, name, address);
+    assertEquals(expectedResult, actualResult);
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Name is null")
+  public void testUpdateCompany_whenNameIsNull_thenThrowPersistenceException() {
+    String ein = "company ein";
+    String address = "company address";
+    companyDao.createCompany("name", ein, "address");
+
+    assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, null, address));
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Name is too long")
+  public void testUpdateCompany_whenNameIsTooLong_thenThrowPersistenceException() {
+    String ein = "company ein";
+    String name = "company name company name company name company name company name company name " +
+        "company name company name company name company name company name";
+    String address = "company address";
+    companyDao.createCompany("name", ein, "address");
+
+    assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, name, address));
+
+    clearEnvironment();
+  }
+
+  @Test
+  @DisplayName("Update company by ein: Address is null")
+  public void testUpdateCompany_whenAddressIsNull_thenThrowPersistenceException() {
+    String ein = "company ein";
+    String name = "company name";
+    companyDao.createCompany("name", ein, "address");
+
+    assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, name, null));
+
+    clearEnvironment();
+  }
+
   private void clearEnvironment() {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    CompanyEntity company = session.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
+    List<CompanyEntity> companies = session.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
         .setParameter("ein", "company ein")
-        .getSingleResult();
-    assertNotNull(company);
-    session.remove(company);
+        .getResultList();
+    assertFalse(companies.isEmpty());
+    session.remove(companies.get(0));
     transaction.commit();
     session.close();
   }

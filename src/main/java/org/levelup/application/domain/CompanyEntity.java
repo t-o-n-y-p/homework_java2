@@ -1,5 +1,6 @@
 package org.levelup.application.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "companies")
+@EqualsAndHashCode(of = {"id", "name", "ein", "address"})
 public class CompanyEntity {
 
   @Id

@@ -263,6 +263,9 @@ class CompanyDaoImplTest {
   @Test
   @DisplayName("Update company by ein: Ein is null")
   public void testUpdateCompany_whenEinIsNull_thenReturnNull() {
+    List<CompanyEntity> expectedResultList = new ArrayList<>();
+    when(query.getResultList()).thenReturn(expectedResultList);
+
     String name = "company name";
     String address = "company address";
     CompanyEntity actualResult = dao.updateCompany(null, name, address);
@@ -274,6 +277,9 @@ class CompanyDaoImplTest {
   @Test
   @DisplayName("Update company by ein: Ein does not exist")
   public void testUpdateCompany_whenEinDoesNotExist_thenReturnNull() {
+    List<CompanyEntity> expectedResultList = new ArrayList<>();
+    when(query.getResultList()).thenReturn(expectedResultList);
+
     String ein = "company ein";
     String name = "company name";
     String address = "company address";
@@ -286,6 +292,9 @@ class CompanyDaoImplTest {
   @Test
   @DisplayName("Update company by ein: Ein is too long")
   public void testUpdateCompany_whenEinIsTooLong_thenReturnNull() {
+    List<CompanyEntity> expectedResultList = new ArrayList<>();
+    when(query.getResultList()).thenReturn(expectedResultList);
+
     String ein = "company ein company ein company ein company ein company ein company ein company ein";
     String name = "company name";
     String address = "company address";

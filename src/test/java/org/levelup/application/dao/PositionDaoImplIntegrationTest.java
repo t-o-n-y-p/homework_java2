@@ -104,11 +104,12 @@ public class PositionDaoImplIntegrationTest {
   private void clearEnvironment() {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    PositionEntity position = session.createQuery("from PositionEntity where name = :name", PositionEntity.class)
-        .setParameter("name", "position name")
-        .getSingleResult();
-    assertNotNull(position);
-    session.remove(position);
+    List<PositionEntity> positions = session.createQuery(
+        "from PositionEntity where name = :name", PositionEntity.class
+    ).setParameter("name", "position name")
+        .getResultList();
+    assertFalse(positions.isEmpty());
+    session.remove(positions.get(0));
     transaction.commit();
     session.close();
   }
