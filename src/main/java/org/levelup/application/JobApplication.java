@@ -154,9 +154,10 @@ public class JobApplication {
       System.out.print("Job record already exists. Update existing job record? ");
       sc = new Scanner(System.in);
       if (Answer.getAnswer(sc.nextLine()) == Answer.YES) {
-        JobListEntity updatedJobRecord = jobListDao.updateJobRecord(jobRecord, startDate, endDate);
+        //JobListEntity updatedJobRecord = jobListDao.updateJobRecord(jobRecord, startDate, endDate);
         System.out.println("Job record updated.");
-        return updatedJobRecord;
+        return null;
+        //return updatedJobRecord;
       }
       return jobRecord;
     }
