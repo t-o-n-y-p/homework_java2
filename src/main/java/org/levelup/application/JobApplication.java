@@ -1,10 +1,12 @@
 package org.levelup.application;
 
+import org.hibernate.jpa.internal.PersistenceUnitUtilImpl;
 import org.levelup.application.dao.*;
 import org.levelup.application.domain.*;
 import org.levelup.hibernate.JobSessionFactoryConfiguration;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.PersistenceUnitUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,30 +19,16 @@ public class JobApplication {
 
   public static void main(String[] args) {
 
-//    CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
+    CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
 //    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
 //        JobSessionFactoryConfiguration.getFactory()
 //    );
 //    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
-//    Integer companyId = companyDao.findByEin("8987332").getId();
+    CompanyEntity testCompany = new CompanyEntity();
+    testCompany.setEin("111111111");
+    testCompany.setId(1);
+    CompanyEntity companyNullId = companyDao.updateCompany("111111111", "name5", "address");
 //
-    UserDao userDao = new UserDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    UserEntity user22 = userDao.createUser("User1", "Last2", "1113332 43333", new ArrayList<>(Arrays.asList(
-        "address 1", "address2", "address3"
-    )));
-//
-    String name1 = "user name";
-    String lastName1 = "user last name";
-    String passport1 = "user passport";
-    String tooLongAddress1 = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-    Collection<String> addresses = new ArrayList<>(Arrays.asList(tooLongAddress1, "10 Downing St."));
-
-    userDao.createUser(name1, lastName1, passport1, addresses);
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
 //    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
@@ -110,7 +98,7 @@ public class JobApplication {
       System.out.print("Company with ein " + ein + " already exists. Update existing company? ");
       String answer = sc.nextLine();
       if (Answer.getAnswer(answer) == Answer.YES) {
-        CompanyEntity updatedCompany = companyDao.updateCompany(company, name, address);
+        CompanyEntity updatedCompany = companyDao.updateCompany(ein, name, address);
         System.out.println("Company with ein " + ein + " updated.");
         return updatedCompany;
       }

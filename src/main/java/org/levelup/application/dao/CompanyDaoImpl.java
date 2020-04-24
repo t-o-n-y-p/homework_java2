@@ -3,6 +3,7 @@ package org.levelup.application.dao;
 import org.hibernate.SessionFactory;
 import org.levelup.application.domain.CompanyEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CompanyDaoImpl extends AbstractDao implements CompanyDao {
@@ -39,22 +40,16 @@ public class CompanyDaoImpl extends AbstractDao implements CompanyDao {
   }
 
   @Override
-  public CompanyEntity findByName(String name) {
-    List<CompanyEntity> entities = runInTransaction(s -> {
-      return s.createQuery("from CompanyEntity where name = :name", CompanyEntity.class)
+  public Collection<CompanyEntity> findByName(String name) {
+    return runWithoutTransaction(s -> s.createQuery("from CompanyEntity where name = :name", CompanyEntity.class)
           .setParameter("name", name)
-          .getResultList();
-    });
-    return entities.isEmpty() ? null : entities.get(0);
+          .getResultList()
+    );
   }
 
   @Override
   public CompanyEntity updateCompany(String ein, String name, String address) {
-    return updateCompany(findByEin(ein), name, address);
-  }
-
-  @Override
-  public CompanyEntity updateCompany(CompanyEntity company, String name, String address) {
+    CompanyEntity company = findByEin(ein);
     return company == null ? null : runInTransaction(s -> {
       company.setName(name);
       company.setAddress(address);
