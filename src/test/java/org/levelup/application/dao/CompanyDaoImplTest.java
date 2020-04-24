@@ -130,9 +130,9 @@ class CompanyDaoImplTest {
 
   @Test
   @DisplayName("Find by ID: ID is null")
-  public void testFindById_whenIdIsNull_thenThrowNullPointerException() {
-    doThrow(NullPointerException.class).when(session).get(eq(CompanyEntity.class), eq(null));
-    assertThrows(NullPointerException.class, () -> dao.findById(null));
+  public void testFindById_whenIdIsNull_thenThrowIllegalArgumentException() {
+    doThrow(IllegalArgumentException.class).when(session).get(eq(CompanyEntity.class), eq(null));
+    assertThrows(IllegalArgumentException.class, () -> dao.findById(null));
   }
 
   @Test
@@ -407,9 +407,7 @@ class CompanyDaoImplTest {
     verify(query, times(1)).getResultList();
     verify(session, times(1)).merge(any(CompanyEntity.class));
     verify(transaction, times(1)).commit();
-    if (name != null && address != null && name.length() <= 100) {
-      verify(session, times(2)).close();
-    }
+    verify(session, times(2)).close();
   }
 
 }

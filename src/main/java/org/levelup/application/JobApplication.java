@@ -20,6 +20,7 @@ public class JobApplication {
   public static void main(String[] args) {
 
     CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
+    companyDao.findById(null);
 //    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
 //        JobSessionFactoryConfiguration.getFactory()
 //    );
