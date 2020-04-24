@@ -13,6 +13,5 @@ public interface JobListDao {
   JobListEntity updateJobRecord(
       Integer companyId, Integer userId, Integer positionId, LocalDate startDate, LocalDate endDate
   );
-  JobListEntity updateJobRecord(JobListEntity jobRecord, LocalDate startDate, LocalDate endDate);
 
 }
