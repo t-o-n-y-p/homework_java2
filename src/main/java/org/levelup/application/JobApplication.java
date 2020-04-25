@@ -35,11 +35,11 @@ public class JobApplication {
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
     JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
-//    jobListDao.createJobRecord(
-//        1, 1, 1, LocalDate.of(2019, 12, 4), null
-//    );
-    jobListDao.findJobRecord(
-        12345678, 1, 1
+    jobListDao.createJobRecord(
+        1, 1, 1, null, null
+    );
+    jobListDao.updateJobRecord(
+        1, 1, 1, null, null
     );
 //
 //    JobListEntity jobRecord = jobListDao.findJobRecord(companyId, user.getId(), positionId);
