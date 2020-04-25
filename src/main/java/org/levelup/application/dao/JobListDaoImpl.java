@@ -17,7 +17,7 @@ public class JobListDaoImpl extends AbstractDao implements JobListDao {
       Integer companyId, Integer userId, Integer positionId, LocalDate startDate, LocalDate endDate
   ) {
     return runInTransaction(s -> {
-      JobListId id = new JobListId(companyId, positionId, userId);
+      JobListId id = new JobListId(companyId, userId, positionId);
       JobListEntity jobRecord = new JobListEntity(id, startDate);
       if (endDate != null) {
         jobRecord.setEndDate(endDate);
@@ -29,7 +29,7 @@ public class JobListDaoImpl extends AbstractDao implements JobListDao {
 
   @Override
   public JobListEntity findJobRecord(Integer companyId, Integer userId, Integer positionId) {
-    return runWithoutTransaction(s -> s.get(JobListEntity.class, new JobListId(companyId, positionId, userId)));
+    return runWithoutTransaction(s -> s.get(JobListEntity.class, new JobListId(companyId, userId, positionId)));
   }
 
   @Override

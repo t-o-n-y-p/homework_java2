@@ -35,12 +35,13 @@ public class JobApplication {
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
     JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    jobListDao.createJobRecord(
-        1, 1, 1, null, null
-    );
-    jobListDao.updateJobRecord(
-        1, 1, 1, null, null
-    );
+    System.out.println(jobListDao.createJobRecord(
+        1, 1, 1, LocalDate.of(2020, 1, 1), null
+    ));
+    System.out.println(jobListDao.findJobRecord(1, 1, 1));
+    System.out.println(jobListDao.updateJobRecord(
+        1, 1, 1, LocalDate.of(2020, 1, 1), null
+    ));
 //
 //    JobListEntity jobRecord = jobListDao.findJobRecord(companyId, user.getId(), positionId);
 //    System.out.println(jobRecord.getCompany());

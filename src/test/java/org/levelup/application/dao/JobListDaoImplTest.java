@@ -163,7 +163,7 @@ class JobListDaoImplTest {
 
   @Test
   @DisplayName("Create job record: End date is null")
-  public void testCreateJobRecord_whenEndDateIsNull_thenThrowPersistenceException() {
+  public void testCreateJobRecord_whenEndDateIsNull_thenPersistJobRecord() {
     Integer companyId = 1;
     Integer userId = 1;
     Integer positionId = 1;
@@ -179,7 +179,7 @@ class JobListDaoImplTest {
 
   @Test
   @DisplayName("Create job record: End date is not null")
-  public void testCreateJobRecord_whenEndDateIsNotNull_thenThrowPersistenceException() {
+  public void testCreateJobRecord_whenEndDateIsNotNull_thenPersistJobRecord() {
     Integer companyId = 1;
     Integer userId = 1;
     Integer positionId = 1;
