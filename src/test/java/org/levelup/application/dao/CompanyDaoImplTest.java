@@ -211,7 +211,7 @@ class CompanyDaoImplTest {
 
   @Test
   @DisplayName("Find by name: Name is null")
-  public void testFindByName_whenNameIsNull_thenReturnNull() {
+  public void testFindByName_whenNameIsNull_thenReturnEmptyCollection() {
     List<CompanyEntity> expectedResult = new ArrayList<>();
     when(query.getResultList()).thenReturn(expectedResult);
 
@@ -222,7 +222,7 @@ class CompanyDaoImplTest {
 
   @Test
   @DisplayName("Find by name: Name does not exist")
-  public void testFindByName_whenNameDoesNotExist_thenReturnNull() {
+  public void testFindByName_whenNameDoesNotExist_thenReturnEmptyCollection() {
     String name = "company name";
     List<CompanyEntity> expectedResult = new ArrayList<>();
     when(query.getResultList()).thenReturn(expectedResult);
@@ -234,7 +234,7 @@ class CompanyDaoImplTest {
 
   @Test
   @DisplayName("Find by name: Name is too long")
-  public void testFindByName_whenNameIsTooLong_thenReturnNull() {
+  public void testFindByName_whenNameIsTooLong_thenReturnEmptyCollection() {
     String name = "company name company name company name company name company name company name " +
         "company name company name company name";
     List<CompanyEntity> expectedResult = new ArrayList<>();
@@ -247,7 +247,7 @@ class CompanyDaoImplTest {
 
   @Test
   @DisplayName("Find by name: Name exists")
-  public void testFindByName_whenNameExists_thenReturnCompany() {
+  public void testFindByName_whenNameExists_thenReturnCompanyCollection() {
     String name = "company name";
     List<CompanyEntity> expectedResult = new ArrayList<>();
     CompanyEntity company = new CompanyEntity();

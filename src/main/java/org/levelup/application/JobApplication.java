@@ -20,15 +20,17 @@ public class JobApplication {
   public static void main(String[] args) {
 
     CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    companyDao.findById(null);
-//    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
-//        JobSessionFactoryConfiguration.getFactory()
-//    );
+    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
+        JobSessionFactoryConfiguration.getFactory()
+    );
 //    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
     CompanyEntity testCompany = new CompanyEntity();
     testCompany.setEin("111111111");
     testCompany.setId(1);
     CompanyEntity companyNullId = companyDao.updateCompany("111111111", "name5", "address");
+    legalDetailsDao.updateLegalDetailsInCompany(
+        123456789, "vtb", "123"
+    );
 //
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //

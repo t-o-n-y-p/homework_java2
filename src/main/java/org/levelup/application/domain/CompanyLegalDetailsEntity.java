@@ -2,6 +2,7 @@ package org.levelup.application.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "company_legal_details")
+@EqualsAndHashCode(of = {"companyId", "bankName", "BIC"})
 public class CompanyLegalDetailsEntity {
 
   @OneToOne(mappedBy = "legalDetails")
@@ -17,9 +19,9 @@ public class CompanyLegalDetailsEntity {
   @Id
   @Column(name = "company_id")
   private Integer companyId;
-  @Column(name = "bank_name", nullable = false)
+  @Column(length = 120, name = "bank_name", nullable = false)
   private String bankName;
-  @Column(name = "bic", nullable = false)
+  @Column(length = 25, name = "bic", nullable = false)
   private String BIC;
 
   public CompanyLegalDetailsEntity(Integer companyId, String bankName, String BIC) {
