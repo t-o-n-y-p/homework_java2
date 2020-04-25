@@ -1,6 +1,7 @@
 package org.levelup.application.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class JobListId implements Serializable {
 
   @Column(name = "company_id")

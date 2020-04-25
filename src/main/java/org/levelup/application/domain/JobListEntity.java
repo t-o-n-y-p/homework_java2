@@ -1,6 +1,7 @@
 package org.levelup.application.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @Table(name = "job_list")
+@EqualsAndHashCode(of = {"id", "startDate", "endDate"})
 public class JobListEntity {
 
   @EmbeddedId

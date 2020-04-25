@@ -19,25 +19,28 @@ public class JobApplication {
 
   public static void main(String[] args) {
 
-    CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
-        JobSessionFactoryConfiguration.getFactory()
-    );
-//    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
-    CompanyEntity testCompany = new CompanyEntity();
-    testCompany.setEin("111111111");
-    testCompany.setId(1);
-    CompanyEntity companyNullId = companyDao.updateCompany("111111111", "name5", "address");
-    legalDetailsDao.updateLegalDetailsInCompany(
-        123456789, "vtb", "123"
-    );
+//    CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
+//    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
+//        JobSessionFactoryConfiguration.getFactory()
+//    );
+////    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
+//    CompanyEntity testCompany = new CompanyEntity();
+//    testCompany.setEin("111111111");
+//    testCompany.setId(1);
+//    CompanyEntity companyNullId = companyDao.updateCompany("111111111", "name5", "address");
+//    legalDetailsDao.updateLegalDetailsInCompany(
+//        123456789, "vtb", "123"
+//    );
 //
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
-//    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
+    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
 //    jobListDao.createJobRecord(
-//        companyId, user.getId(), positionId, LocalDate.of(2019, 12, 4), null
+//        1, 1, 1, LocalDate.of(2019, 12, 4), null
 //    );
+    jobListDao.findJobRecord(
+        12345678, 1, 1
+    );
 //
 //    JobListEntity jobRecord = jobListDao.findJobRecord(companyId, user.getId(), positionId);
 //    System.out.println(jobRecord.getCompany());
