@@ -42,6 +42,8 @@ public class UserDaoImplIntegrationTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(null, lastName, passport, addresses));
+
+    assertUserDoesNotExist(null, lastName, passport);
   }
 
   @Test
@@ -53,6 +55,8 @@ public class UserDaoImplIntegrationTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(tooLongName, lastName, passport, addresses));
+
+    assertUserDoesNotExist(tooLongName, lastName, passport);
   }
 
   @Test
@@ -62,6 +66,8 @@ public class UserDaoImplIntegrationTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, null, passport, addresses));
+
+    assertUserDoesNotExist(name, null, passport);
   }
 
   @Test
@@ -73,6 +79,8 @@ public class UserDaoImplIntegrationTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, tooLongLastName, passport, addresses));
+
+    assertUserDoesNotExist(name, tooLongLastName, passport);
   }
 
   @Test
@@ -82,6 +90,8 @@ public class UserDaoImplIntegrationTest {
     String lastName = "user last name";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, null, addresses));
+
+    assertUserDoesNotExist(name, lastName, null);
   }
 
   @Test
@@ -92,6 +102,8 @@ public class UserDaoImplIntegrationTest {
     String tooLongPassport = "000000000000000000000000000000000000000000000000000000000000000000000000000000";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, tooLongPassport, addresses));
+
+    assertUserDoesNotExist(name, lastName, tooLongPassport);
   }
 
   @Test
@@ -104,11 +116,7 @@ public class UserDaoImplIntegrationTest {
     UserEntity user = userDao.createUser(name, lastName, passport, addresses);
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, passport, addresses));
 
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-    session.remove(user);
-    transaction.commit();
-    session.close();
+    assertUserExistsAndClear(user);
   }
 
   @Test
@@ -118,6 +126,8 @@ public class UserDaoImplIntegrationTest {
     String lastName = "user last name";
     String passport = "user passport";
     assertThrows(NullPointerException.class, () -> userDao.createUser(name, lastName, passport, null));
+
+    assertUserDoesNotExist(name, lastName, passport);
   }
 
   @Test
@@ -135,18 +145,7 @@ public class UserDaoImplIntegrationTest {
     assertEquals(passport, actualResult.getPassport());
     assertTrue(actualResult.getAddresses().isEmpty());
 
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-    UserEntity user = session.createQuery(
-        "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
-    ).setParameter("name", name)
-        .setParameter("lastName", lastName)
-        .setParameter("passport", passport)
-        .getSingleResult();
-    assertNotNull(user);
-    session.remove(user);
-    transaction.commit();
-    session.close();
+    assertUserExistsAndClear(actualResult);
   }
 
   @Test
@@ -159,25 +158,8 @@ public class UserDaoImplIntegrationTest {
 
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, passport, addresses));
 
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-    UserEntity user = session.createQuery(
-        "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
-    ).setParameter("name", name)
-        .setParameter("lastName", lastName)
-        .setParameter("passport", passport)
-        .getSingleResult();
-    assertNotNull(user);
-    UserAddressesEntity actualPrimeMinisterAddress = session.createQuery(
-        "from UserAddressesEntity where user_id = :userId and address = :address", UserAddressesEntity.class
-    ).setParameter("userId", user.getId())
-        .setParameter("address", "10 Downing St.")
-        .getSingleResult();
-    assertNotNull(actualPrimeMinisterAddress);
-    session.remove(user);
-    transaction.commit();
-    session.close();
-
+    assertUserAddressExists("10 Downing St.");
+    assertUserExistsAndClear();
   }
 
   @Test
@@ -197,25 +179,8 @@ public class UserDaoImplIntegrationTest {
     );
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, passport, addresses));
 
-    Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
-    UserEntity user = session.createQuery(
-        "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
-    ).setParameter("name", name)
-        .setParameter("lastName", lastName)
-        .setParameter("passport", passport)
-        .getSingleResult();
-    assertNotNull(user);
-    UserAddressesEntity actualSherlockAddress = session.createQuery(
-        "from UserAddressesEntity where user_id = :userId and address = :address", UserAddressesEntity.class
-    ).setParameter("userId", user.getId())
-        .setParameter("address", "221B Baker St.")
-        .getSingleResult();
-    assertNotNull(actualSherlockAddress);
-    session.remove(user);
-    transaction.commit();
-    session.close();
-
+    assertUserAddressExists("221B Baker St.");
+    assertUserExistsAndClear();
   }
 
   @Test
@@ -243,29 +208,60 @@ public class UserDaoImplIntegrationTest {
             .count()
     );
 
+    assertUserAddressExists(sherlockAddress.getAddress());
+    assertUserAddressExists(primeMinisterAddress.getAddress());
+    assertUserExistsAndClear();
+  }
+
+  private void assertUserExistsAndClear(UserEntity user) {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    UserEntity user = session.createQuery(
+    session.remove(user);
+    transaction.commit();
+    session.close();
+  }
+
+  private void assertUserExistsAndClear() {
+    Session session = factory.openSession();
+    Transaction transaction = session.beginTransaction();
+    List<UserEntity> users = session.createQuery(
+        "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
+    ).setParameter("name", "user name")
+        .setParameter("lastName", "user last name")
+        .setParameter("passport", "user passport")
+        .getResultList();
+    session.remove(users.get(0));
+    transaction.commit();
+    session.close();
+  }
+
+  private void assertUserAddressExists(String address) {
+    Session session = factory.openSession();
+    List<UserEntity> users = session.createQuery(
+        "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
+    ).setParameter("name", "user name")
+        .setParameter("lastName", "user last name")
+        .setParameter("passport", "user passport")
+        .getResultList();
+    Integer userId = users.get(0).getId();
+    List<UserAddressesEntity> addresses = session.createQuery(
+        "from UserAddressesEntity where user_id = :userId and address = :address", UserAddressesEntity.class
+    ).setParameter("userId", userId)
+        .setParameter("address", address)
+        .getResultList();
+    assertFalse(addresses.isEmpty());
+    session.close();
+  }
+
+  private void assertUserDoesNotExist(String name, String lastName, String passport) {
+    Session session = factory.openSession();
+    List<UserEntity> users = session.createQuery(
         "from UserEntity where name = :name and lastName = :lastName and passport = :passport", UserEntity.class
     ).setParameter("name", name)
         .setParameter("lastName", lastName)
         .setParameter("passport", passport)
-        .getSingleResult();
-    assertNotNull(user);
-    UserAddressesEntity actualSherlockAddress = session.createQuery(
-        "from UserAddressesEntity where user_id = :userId and address = :address", UserAddressesEntity.class
-    ).setParameter("userId", user.getId())
-        .setParameter("address", sherlockAddress.getAddress())
-        .getSingleResult();
-    assertNotNull(actualSherlockAddress);
-    UserAddressesEntity actualPrimeMinisterAddress = session.createQuery(
-        "from UserAddressesEntity where user_id = :userId and address = :address", UserAddressesEntity.class
-    ).setParameter("userId", user.getId())
-        .setParameter("address", primeMinisterAddress.getAddress())
-        .getSingleResult();
-    assertNotNull(actualPrimeMinisterAddress);
-    session.remove(user);
-    transaction.commit();
+        .getResultList();
+    assertTrue(users.isEmpty());
     session.close();
   }
 

@@ -55,6 +55,9 @@ class UserDaoImplTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(null, lastName, passport, addresses));
+
+    verify(session).persist(any(UserEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -67,6 +70,8 @@ class UserDaoImplTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(tooLongName, lastName, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -77,6 +82,8 @@ class UserDaoImplTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(name, null, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -89,6 +96,8 @@ class UserDaoImplTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(name, tooLongLastName, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -99,6 +108,8 @@ class UserDaoImplTest {
     String lastName = "user last name";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, null, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -110,6 +121,8 @@ class UserDaoImplTest {
     String tooLongPassport = "000000000000000000000000000000000000000000000000000000000000000000000000000000";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, tooLongPassport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -121,6 +134,8 @@ class UserDaoImplTest {
     String passport = "user passport";
     Collection<String> addresses = new ArrayList<>(Arrays.asList("221B Baker St.", "10 Downing St."));
     assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -130,6 +145,8 @@ class UserDaoImplTest {
     String lastName = "user last name";
     String passport = "user passport";
     assertThrows(NullPointerException.class, () -> dao.createUser(name, lastName, passport, null));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -161,6 +178,8 @@ class UserDaoImplTest {
     Collection<String> addresses = new ArrayList<>(Arrays.asList(null, "10 Downing St."));
 
     assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -179,6 +198,8 @@ class UserDaoImplTest {
     Collection<String> addresses = new ArrayList<>(Arrays.asList(tooLongAddress, "10 Downing St."));
 
     assertThrows(PersistenceException.class, () -> dao.createUser(name, lastName, passport, addresses));
+
+    verify(session, times(1)).close();
   }
 
   @Test

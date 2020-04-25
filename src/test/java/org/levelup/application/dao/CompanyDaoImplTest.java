@@ -62,6 +62,8 @@ class CompanyDaoImplTest {
     String ein = "company ein";
     String address = "company address";
     assertThrows(PersistenceException.class, () -> dao.createCompany(null, ein, address));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -73,6 +75,8 @@ class CompanyDaoImplTest {
     String ein = "company ein";
     String address = "company address";
     assertThrows(PersistenceException.class, () -> dao.createCompany(name, ein, address));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -82,6 +86,8 @@ class CompanyDaoImplTest {
     String ein = "company ein";
     String name = "company name";
     assertThrows(PersistenceException.class, () -> dao.createCompany(name, ein, null));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -91,6 +97,8 @@ class CompanyDaoImplTest {
     String name = "company name";
     String address = "company address";
     assertThrows(PersistenceException.class, () -> dao.createCompany(name, null, address));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -101,6 +109,8 @@ class CompanyDaoImplTest {
     String ein = "company ein company ein company ein company ein company ein company ein company ein company ein";
     String address = "company address";
     assertThrows(PersistenceException.class, () -> dao.createCompany(name, ein, address));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -111,6 +121,8 @@ class CompanyDaoImplTest {
     String ein = "company ein";
     String address = "company address";
     assertThrows(PersistenceException.class, () -> dao.createCompany(name, ein, address));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -119,10 +131,14 @@ class CompanyDaoImplTest {
     String name = "company name";
     String ein = "company ein";
     String address = "company address";
+    CompanyEntity expectedResult = new CompanyEntity();
+    expectedResult.setName(name);
+    expectedResult.setEin(ein);
+    expectedResult.setAddress(address);
+
     CompanyEntity actualResult = dao.createCompany(name, ein, address);
-    assertEquals(name, actualResult.getName());
-    assertEquals(ein, actualResult.getEin());
-    assertEquals(address, actualResult.getAddress());
+    assertEquals(expectedResult, actualResult);
+
     verify(session).persist(any(CompanyEntity.class));
     verify(transaction, times(1)).commit();
     verify(session, times(1)).close();
@@ -133,10 +149,12 @@ class CompanyDaoImplTest {
   public void testFindById_whenIdIsNull_thenThrowIllegalArgumentException() {
     doThrow(IllegalArgumentException.class).when(session).get(eq(CompanyEntity.class), eq(null));
     assertThrows(IllegalArgumentException.class, () -> dao.findById(null));
+
+    verifyFindByIdCalls(null);
   }
 
   @Test
-  @DisplayName("Find by ID: Company does not exist")
+  @DisplayName("Find by ID: ID does not exist")
   public void testFindById_whenIdDoesNotExist_thenReturnNull() {
     Integer id = 1;
     when(session.get(eq(CompanyEntity.class), any(Integer.class))).thenReturn(null);
@@ -147,7 +165,7 @@ class CompanyDaoImplTest {
   }
 
   @Test
-  @DisplayName("Find by ID: Company exists")
+  @DisplayName("Find by ID: ID exists")
   public void testFindById_whenIdExists_thenReturnCompany() {
     Integer id = 1;
     CompanyEntity expectedResult = new CompanyEntity();
@@ -167,6 +185,7 @@ class CompanyDaoImplTest {
 
     CompanyEntity actualResult = dao.findByEin(null);
     assertNull(actualResult);
+
     verifyFindByEinCalls(null);
   }
 
@@ -179,6 +198,7 @@ class CompanyDaoImplTest {
 
     CompanyEntity actualResult = dao.findByEin(ein);
     assertNull(actualResult);
+
     verifyFindByEinCalls(ein);
   }
 
@@ -191,6 +211,7 @@ class CompanyDaoImplTest {
 
     CompanyEntity actualResult = dao.findByEin(ein);
     assertNull(actualResult);
+
     verifyFindByEinCalls(ein);
   }
 
@@ -206,6 +227,7 @@ class CompanyDaoImplTest {
 
     CompanyEntity actualResult = dao.findByEin(ein);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByEinCalls(ein);
   }
 
@@ -217,6 +239,7 @@ class CompanyDaoImplTest {
 
     Collection<CompanyEntity> actualResult = dao.findByName(null);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByNameCalls(null);
   }
 
@@ -229,6 +252,7 @@ class CompanyDaoImplTest {
 
     Collection<CompanyEntity> actualResult = dao.findByName(name);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByNameCalls(name);
   }
 
@@ -242,6 +266,7 @@ class CompanyDaoImplTest {
 
     Collection<CompanyEntity> actualResult = dao.findByName(name);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByNameCalls(name);
   }
 
@@ -257,6 +282,7 @@ class CompanyDaoImplTest {
 
     Collection<CompanyEntity> actualResult = dao.findByName(name);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByNameCalls(name);
   }
 
@@ -322,7 +348,7 @@ class CompanyDaoImplTest {
     CompanyEntity actualResult = dao.updateCompany(ein, name, address);
     assertEquals(expectedResult, actualResult);
 
-    verifyUpdateCompanyCalls(ein, name, address);
+    verifyUpdateCompanyCalls(ein);
   }
 
   @Test
@@ -342,7 +368,7 @@ class CompanyDaoImplTest {
 
     assertThrows(PersistenceException.class, () -> dao.updateCompany(ein, null, address));
 
-    verifyUpdateCompanyCalls(ein, null, address);
+    verifyUpdateCompanyCalls(ein);
   }
 
   @Test
@@ -365,7 +391,7 @@ class CompanyDaoImplTest {
 
     assertThrows(PersistenceException.class, () -> dao.updateCompany(ein, name, address));
 
-    verifyUpdateCompanyCalls(ein, name, address);
+    verifyUpdateCompanyCalls(ein);
   }
 
   @Test
@@ -385,7 +411,7 @@ class CompanyDaoImplTest {
 
     assertThrows(PersistenceException.class, () -> dao.updateCompany(ein, name, null));
 
-    verifyUpdateCompanyCalls(ein, name, null);
+    verifyUpdateCompanyCalls(ein);
   }
 
   private void verifyFindByIdCalls(Integer id) {
@@ -406,10 +432,12 @@ class CompanyDaoImplTest {
         .createQuery(eq("from CompanyEntity where ein = :ein"), eq(CompanyEntity.class));
     verify(query, times(1)).setParameter(eq("ein"), eq(ein));
     verify(query, times(1)).getResultList();
+    verify(session, times(0)).merge(any(CompanyEntity.class));
+    verify(transaction, times(0)).commit();
     verify(session, times(1)).close();
   }
 
-  private void verifyUpdateCompanyCalls(String ein, String name, String address) {
+  private void verifyUpdateCompanyCalls(String ein) {
     verify(session, times(1))
         .createQuery(eq("from CompanyEntity where ein = :ein"), eq(CompanyEntity.class));
     verify(query, times(1)).setParameter(eq("ein"), eq(ein));

@@ -53,6 +53,8 @@ class PositionDaoImplTest {
     String name = "position name position name position name position name " +
         "position name position name position name position name";
     assertThrows(PersistenceException.class, () -> dao.createPosition(name));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -61,6 +63,8 @@ class PositionDaoImplTest {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     String name = "position name";
     assertThrows(PersistenceException.class, () -> dao.createPosition(name));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -68,6 +72,8 @@ class PositionDaoImplTest {
   public void testCreatePosition_whenPositionNameIsNull_thenThrowPersistenceException() {
     doThrow(PersistenceException.class).when(session).persist(any(PositionEntity.class));
     assertThrows(PersistenceException.class, () -> dao.createPosition(null));
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -76,6 +82,7 @@ class PositionDaoImplTest {
     String name = "position name";
     PositionEntity entity = dao.createPosition(name);
     assertEquals(name, entity.getName());
+
     verify(session).persist(any(PositionEntity.class));
     verify(transaction, times(1)).commit();
     verify(session, times(1)).close();
@@ -91,6 +98,7 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(name);
     assertNull(actualResult);
+
     verifyFindByNameCalls(name);
   }
 
@@ -102,6 +110,7 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(null);
     assertNull(actualResult);
+
     verifyFindByNameCalls(null);
   }
 
@@ -114,6 +123,7 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(name);
     assertNull(actualResult);
+
     verifyFindByNameCalls(name);
   }
 
@@ -129,6 +139,7 @@ class PositionDaoImplTest {
 
     PositionEntity actualResult = dao.findByName(name);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByNameCalls(name);
   }
 

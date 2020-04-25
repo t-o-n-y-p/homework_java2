@@ -39,53 +39,68 @@ public class CompanyLegalDetailsDaoImplIntegrationTest {
   @Test
   @DisplayName("Update legal details: Bank name is null")
   public void testUpdateLegalDetailsInCompany_whenBankNameIsNull_thenThrowPersistenceException() {
-    Integer id = 1;
+    CompanyEntity company = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
     String bic = "company bic";
 
     assertThrows(
         PersistenceException.class,
-        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(id, null, bic)
+        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), null, bic)
     );
-    assertLegalDetailsDoNotExist();
+    assertLegalDetailsDoNotExist(company.getId());
+    clearEnvironment(company);
   }
 
   @Test
   @DisplayName("Update legal details: Bank name is too long")
   public void testUpdateLegalDetailsInCompany_whenBankNameIsToLong_thenThrowPersistenceException() {
-    Integer id = 1;
+    CompanyEntity company = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
     String bankName = "company bank name company bank name company bank name company bank name company bank name " +
         "company bank name company bank name company bank name";
     String bic = "company bic";
 
     assertThrows(
-        PersistenceException.class, () -> companyLegalDetailsDao.updateLegalDetailsInCompany(id, bankName, bic)
+        PersistenceException.class,
+        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic)
     );
-    assertLegalDetailsDoNotExist();
+    assertLegalDetailsDoNotExist(company.getId());
+    clearEnvironment(company);
   }
 
   @Test
   @DisplayName("Update legal details: Bic is null")
   public void testUpdateLegalDetailsInCompany_whenBicIsNull_thenThrowPersistenceException() {
-    Integer id = 1;
+    CompanyEntity company = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
     String bankName = "company bank name";
 
     assertThrows(
-        PersistenceException.class, () -> companyLegalDetailsDao.updateLegalDetailsInCompany(id, bankName, null)
+        PersistenceException.class,
+        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, null)
     );
-    assertLegalDetailsDoNotExist();
+    assertLegalDetailsDoNotExist(company.getId());
+    clearEnvironment(company);
   }
 
   @Test
   @DisplayName("Update legal details: Bic is too long")
   public void testUpdateLegalDetailsInCompany_whenBicIsTooLong_thenThrowPersistenceException() {
-    Integer id = 1;
+    CompanyEntity company = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
     String bankName = "company bank name";
     String bic = "000000000000000000000000000000000000000000000000000000000000";
 
     assertThrows(
-        PersistenceException.class, () -> companyLegalDetailsDao.updateLegalDetailsInCompany(id, bankName, bic)
+        PersistenceException.class,
+        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic)
     );
-    assertLegalDetailsDoNotExist();
+    assertLegalDetailsDoNotExist(company.getId());
+    clearEnvironment(company);
   }
 
   @Test
@@ -98,23 +113,20 @@ public class CompanyLegalDetailsDaoImplIntegrationTest {
         PersistenceException.class,
         () -> companyLegalDetailsDao.updateLegalDetailsInCompany(null, bankName, bic)
     );
-    assertLegalDetailsDoNotExist();
   }
 
 //  !!! This test des not work as expected. Real Hibernate throws PersistenceException here, H2 creates legal details.
+//  !!! How to get this working?
 //  @Test
 //  @DisplayName("Update legal details: Company does not exist")
 //  public void testUpdateLegalDetailsInCompany_whenCompanyDoesNotExist_thenThrowPersistenceException() {
 //    Integer id = 1;
 //    String bankName = "company bank name";
 //    String bic = "company bic";
-//    assertLegalDetailsDoNotExist();
-//    assertCompanyDoesNotExist();
 //
 //    assertThrows(
 //        PersistenceException.class, () -> companyLegalDetailsDao.updateLegalDetailsInCompany(id, bankName, bic)
 //    );
-//    assertLegalDetailsDoNotExist();
 //  }
 
   @Test
@@ -127,7 +139,28 @@ public class CompanyLegalDetailsDaoImplIntegrationTest {
     );
     companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic);
 
-    clearEnvironment();
+    company = companyDao.findById(company.getId());
+    assertLegalDetailsExist(company.getId());
+    clearEnvironment(company);
+  }
+
+  @Test
+  @DisplayName("Update legal details: Legal details already exist")
+  public void testUpdateLegalDetailsInCompany_whenLegalDetailsExist_thenThrowPersistenceException() {
+    String bankName = "company bank name";
+    String bic = "company bic";
+    CompanyEntity company = companyDao.createCompany(
+        "company name", "company ein", "company address"
+    );
+    companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic);
+
+    assertThrows(
+        PersistenceException.class,
+        () -> companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic)
+    );
+
+    CompanyEntity fetchedCompany = companyDao.findById(company.getId());
+    clearEnvironment(fetchedCompany);
   }
 
   @Test
@@ -164,31 +197,31 @@ public class CompanyLegalDetailsDaoImplIntegrationTest {
     );
     companyLegalDetailsDao.updateLegalDetailsInCompany(company.getId(), bankName, bic);
     List<CompanyLegalDetailsEntity> expectedResult = new ArrayList<>();
-    expectedResult.add(new CompanyLegalDetailsEntity(company.getId(), bankName, bic));
+    CompanyLegalDetailsEntity legalDetails = new CompanyLegalDetailsEntity(company.getId(), bankName, bic);
+    legalDetails.setCompany(company);
+    expectedResult.add(legalDetails);
 
     Collection<CompanyLegalDetailsEntity> actualResult = companyLegalDetailsDao.findAllByBankName(bankName);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    company = companyDao.findById(company.getId());
+    clearEnvironment(company);
   }
 
-  private void clearEnvironment() {
+  private void assertLegalDetailsExist(Integer companyId) {
     Session session = factory.openSession();
-    Transaction transaction = session.beginTransaction();
     List<CompanyLegalDetailsEntity> legalDetails = session.createQuery(
         "from CompanyLegalDetailsEntity where bankName = :bankName", CompanyLegalDetailsEntity.class
     ).setParameter("bankName", "company bank name")
         .getResultList();
     assertFalse(legalDetails.isEmpty());
-    List<CompanyEntity> companies = session.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
-        .setParameter("ein", "company ein")
-        .getResultList();
-    session.remove(companies.get(0));
-    transaction.commit();
+    assertNotNull(legalDetails.get(0).getCompany());
     session.close();
+    CompanyEntity company = companyDao.findById(companyId);
+    assertNotNull(company.getLegalDetails());
   }
 
-  private void assertLegalDetailsDoNotExist() {
+  private void assertLegalDetailsDoNotExist(Integer companyId) {
     Session session = factory.openSession();
     List<CompanyLegalDetailsEntity> legalDetails = session.createQuery(
         "from CompanyLegalDetailsEntity where bankName = :bankName", CompanyLegalDetailsEntity.class
@@ -196,15 +229,15 @@ public class CompanyLegalDetailsDaoImplIntegrationTest {
         .getResultList();
     assertTrue(legalDetails.isEmpty());
     session.close();
+    CompanyEntity company = companyDao.findById(companyId);
+    assertNull(company.getLegalDetails());
   }
 
-  private void assertCompanyDoesNotExist() {
+  private void clearEnvironment(CompanyEntity company) {
     Session session = factory.openSession();
-    List<CompanyEntity> companies = session.createQuery(
-        "from CompanyEntity where ein = :ein", CompanyEntity.class
-    ).setParameter("ein", "company ein")
-        .getResultList();
-    assertTrue(companies.isEmpty());
+    Transaction transaction = session.beginTransaction();
+    session.remove(company);
+    transaction.commit();
     session.close();
   }
 

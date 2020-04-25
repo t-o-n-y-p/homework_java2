@@ -57,6 +57,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(null, userId, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -72,6 +75,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -86,6 +92,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, null, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -101,6 +110,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -115,6 +127,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, null, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -130,6 +145,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -144,6 +162,8 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, positionId, null, endDate)
     );
+
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -159,6 +179,9 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.createJobRecord(companyId, userId, positionId, startDate, endDate)
     );
+
+    verify(session).persist(any(JobListEntity.class));
+    verify(session, times(1)).close();
   }
 
   @Test
@@ -190,6 +213,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.createJobRecord(companyId, userId, positionId, startDate, endDate);
     assertEquals(expectedResult, actualResult);
+
     verify(session).persist(any(JobListEntity.class));
     verify(transaction, times(1)).commit();
     verify(session, times(1)).close();
@@ -204,6 +228,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(null, userId, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -218,6 +243,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -231,6 +257,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, null, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -245,6 +272,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -258,6 +286,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, null);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -272,6 +301,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -286,6 +316,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, positionId);
     assertNull(actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -302,6 +333,7 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.findJobRecord(companyId, userId, positionId);
     assertEquals(expectedResult, actualResult);
+
     verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).close();
   }
@@ -317,6 +349,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(null, userId, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -331,6 +366,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -344,6 +382,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, null, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -358,6 +399,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -371,6 +415,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, null, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -385,6 +432,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -399,6 +449,9 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, endDate);
     assertNull(actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).close();
   }
 
   @Test
@@ -416,6 +469,10 @@ class JobListDaoImplTest {
     assertThrows(
         PersistenceException.class, () -> dao.updateJobRecord(companyId, userId, positionId, null, endDate)
     );
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
+    verify(session).merge(any(JobListEntity.class));
+    verify(session, times(2)).close();
   }
 
   @Test
@@ -432,6 +489,8 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, null);
     assertEquals(expectedResult, actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).merge(any(JobListEntity.class));
     verify(transaction).commit();
     verify(session, times(2)).close();
@@ -453,6 +512,8 @@ class JobListDaoImplTest {
 
     JobListEntity actualResult = dao.updateJobRecord(companyId, userId, positionId, startDate, endDate);
     assertEquals(expectedResult, actualResult);
+
+    verify(session).get(eq(JobListEntity.class), any(JobListId.class));
     verify(session).merge(any(JobListEntity.class));
     verify(transaction).commit();
     verify(session, times(2)).close();

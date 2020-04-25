@@ -1,6 +1,7 @@
 package org.levelup.application.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "auth_details")
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id", "login", "password"})
 public class AuthDetailsEntity {
 
   @Id

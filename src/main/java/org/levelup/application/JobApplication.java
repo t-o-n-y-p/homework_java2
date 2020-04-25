@@ -20,28 +20,31 @@ public class JobApplication {
   public static void main(String[] args) {
 
 //    CompanyDao companyDao = new CompanyDaoImpl(JobSessionFactoryConfiguration.getFactory());
-//    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
-//        JobSessionFactoryConfiguration.getFactory()
-//    );
-////    companyDao.create("Company JobList", "8987332", "Saint-Petersburg");
+    CompanyLegalDetailsDao legalDetailsDao = new CompanyLegalDetailsDaoImpl(
+        JobSessionFactoryConfiguration.getFactory()
+    );
+//    companyDao.createCompany("1", "8987332", "Saint-Petersburg");
 //    CompanyEntity testCompany = new CompanyEntity();
 //    testCompany.setEin("111111111");
 //    testCompany.setId(1);
 //    CompanyEntity companyNullId = companyDao.updateCompany("111111111", "name5", "address");
-//    legalDetailsDao.updateLegalDetailsInCompany(
-//        123456789, "vtb", "123"
-//    );
+    legalDetailsDao.updateLegalDetailsInCompany(
+        1, "vtb", "123"
+    );
+    legalDetailsDao.updateLegalDetailsInCompany(
+        1, "qwe", "456"
+    );
 //
 //    Integer positionId = positionDao.createPosition(" ").getId();
 //
-    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
-    System.out.println(jobListDao.createJobRecord(
-        1, 1, 1, LocalDate.of(2020, 1, 1), null
-    ));
-    System.out.println(jobListDao.findJobRecord(1, 1, 1));
-    System.out.println(jobListDao.updateJobRecord(
-        1, 1, 1, LocalDate.of(2020, 1, 1), null
-    ));
+//    JobListDao jobListDao = new JobListDaoImpl(JobSessionFactoryConfiguration.getFactory());
+//    System.out.println(jobListDao.createJobRecord(
+//        1, 1, 1, LocalDate.of(2020, 1, 1), null
+//    ));
+//    System.out.println(jobListDao.findJobRecord(1, 1, 1));
+//    System.out.println(jobListDao.updateJobRecord(
+//        1, 1, 1, LocalDate.of(2020, 1, 1), null
+//    ));
 //
 //    JobListEntity jobRecord = jobListDao.findJobRecord(companyId, user.getId(), positionId);
 //    System.out.println(jobRecord.getCompany());

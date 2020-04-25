@@ -35,6 +35,7 @@ public class PositionDaoImplIntegrationTest {
     String name = "position name position name position name position name " +
         "position name position name position name position name";
     assertThrows(PersistenceException.class, () -> positionDao.createPosition(name));
+
     assertPositionDoesNotExist();
   }
 
@@ -52,6 +53,7 @@ public class PositionDaoImplIntegrationTest {
   @DisplayName("Create: Position name is null")
   public void testCreatePosition_whenPositionNameIsNull_thenThrowPersistenceException() {
     assertThrows(PersistenceException.class, () -> positionDao.createPosition(null));
+
     assertPositionDoesNotExist();
   }
 

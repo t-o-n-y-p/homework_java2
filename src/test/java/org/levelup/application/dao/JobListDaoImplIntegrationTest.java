@@ -52,6 +52,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(null, user.getId(), position.getId(), startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(null, user.getId(), position.getId());
     clearParentObjects(user, position);
   }
 
@@ -70,6 +72,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(companyId, user.getId(), position.getId(), startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(companyId, user.getId(), position.getId());
     clearParentObjects(user, position);
   }
 
@@ -87,6 +91,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), null, position.getId(), startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(company.getId(), null, position.getId());
     clearParentObjects(company, position);
   }
 
@@ -105,6 +111,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), userId, position.getId(), startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(company.getId(), userId, position.getId());
     clearParentObjects(company, position);
   }
 
@@ -124,6 +132,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), user.getId(), null, startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(company.getId(), user.getId(), null);
     clearParentObjects(company, user);
   }
 
@@ -144,6 +154,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), user.getId(), positionId, startDate, endDate)
     );
+
+    validateJobRecordDoesNotExist(company.getId(), user.getId(), positionId);
     clearParentObjects(company, user);
   }
 
@@ -163,6 +175,8 @@ public class JobListDaoImplIntegrationTest {
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), user.getId(), position.getId(), null, endDate)
     );
+
+    validateJobRecordDoesNotExist(company.getId(), user.getId(), position.getId());
     clearParentObjects(company, user, position);
   }
 
@@ -178,13 +192,16 @@ public class JobListDaoImplIntegrationTest {
         "user name", "user last name", "user passport", new ArrayList<>()
     );
     PositionEntity position = positionDao.createPosition("position name");
-    jobListDao.createJobRecord(company.getId(), user.getId(), position.getId(), startDate, endDate);
+    JobListEntity jobRecord = jobListDao.createJobRecord(
+        company.getId(), user.getId(), position.getId(), startDate, endDate
+    );
 
     assertThrows(
         PersistenceException.class,
         () -> jobListDao.createJobRecord(company.getId(), user.getId(), position.getId(), startDate, endDate)
     );
-    clearJobRecord(new JobListId(company.getId(), user.getId(), position.getId()));
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
 
   }
@@ -208,7 +225,8 @@ public class JobListDaoImplIntegrationTest {
         company.getId(), user.getId(), position.getId(), startDate, null
     );
     assertEquals(expectedResult, actualResult);
-    clearJobRecord(expectedResult.getId());
+
+    validateAndClearJobRecord(actualResult);
     clearParentObjects(company, user, position);
   }
 
@@ -233,7 +251,8 @@ public class JobListDaoImplIntegrationTest {
         company.getId(), user.getId(), position.getId(), startDate, endDate
     );
     assertEquals(expectedResult, actualResult);
-    clearJobRecord(expectedResult.getId());
+
+    validateAndClearJobRecord(actualResult);
     clearParentObjects(company, user, position);
   }
 
@@ -247,6 +266,7 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity actualResult = jobListDao.findJobRecord(null, user.getId(), position.getId());
     assertNull(actualResult);
+
     clearParentObjects(user, position);
   }
 
@@ -261,6 +281,7 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity actualResult = jobListDao.findJobRecord(companyId, user.getId(), position.getId());
     assertNull(actualResult);
+
     clearParentObjects(user, position);
   }
 
@@ -274,6 +295,7 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), null, position.getId());
     assertNull(actualResult);
+
     clearParentObjects(company, position);
   }
 
@@ -288,6 +310,7 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), userId, position.getId());
     assertNull(actualResult);
+
     clearParentObjects(company, position);
   }
 
@@ -302,6 +325,7 @@ public class JobListDaoImplIntegrationTest {
     );
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), user.getId(), null);
     assertNull(actualResult);
+
     clearParentObjects(company, user);
   }
 
@@ -317,6 +341,7 @@ public class JobListDaoImplIntegrationTest {
     );
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), user.getId(), positionId);
     assertNull(actualResult);
+
     clearParentObjects(company, user);
   }
 
@@ -333,6 +358,7 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertNull(actualResult);
+
     clearParentObjects(company, user, position);
   }
 
@@ -355,7 +381,7 @@ public class JobListDaoImplIntegrationTest {
     JobListEntity actualResult = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(expectedResult, actualResult);
 
-    clearJobRecord(expectedResult.getId());
+    validateAndClearJobRecord(actualResult);
     clearParentObjects(company, user, position);
   }
 
@@ -382,7 +408,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -409,7 +436,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -436,7 +464,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -463,7 +492,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -490,7 +520,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -517,7 +548,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -535,6 +567,7 @@ public class JobListDaoImplIntegrationTest {
     );
     assertNull(actualResult);
 
+    validateJobRecordDoesNotExist(companyId, userId, positionId);
   }
 
   @Test
@@ -560,7 +593,8 @@ public class JobListDaoImplIntegrationTest {
 
     JobListEntity jobRecordAfterUpdate = jobListDao.findJobRecord(company.getId(), user.getId(), position.getId());
     assertEquals(jobRecord, jobRecordAfterUpdate);
-    clearJobRecord(jobRecord.getId());
+
+    validateAndClearJobRecord(jobRecord);
     clearParentObjects(company, user, position);
   }
 
@@ -580,14 +614,16 @@ public class JobListDaoImplIntegrationTest {
     JobListEntity jobRecord = jobListDao.createJobRecord(
         company.getId(), user.getId(), position.getId(), startDate, endDate
     );
+    JobListEntity expectedResult = new JobListEntity();
+    expectedResult.setId(jobRecord.getId());
+    expectedResult.setStartDate(newStartDate);
 
     JobListEntity actualResult = jobListDao.updateJobRecord(
         company.getId(), user.getId(), position.getId(), newStartDate, null
     );
+    assertEquals(expectedResult, actualResult);
 
-    assertEquals(newStartDate, actualResult.getStartDate());
-    assertNull(actualResult.getEndDate());
-    clearJobRecord(jobRecord.getId());
+    validateAndClearJobRecord(actualResult);
     clearParentObjects(company, user, position);
   }
 
@@ -608,14 +644,17 @@ public class JobListDaoImplIntegrationTest {
     JobListEntity jobRecord = jobListDao.createJobRecord(
         company.getId(), user.getId(), position.getId(), startDate, endDate
     );
+    JobListEntity expectedResult = new JobListEntity();
+    expectedResult.setId(jobRecord.getId());
+    expectedResult.setStartDate(newStartDate);
+    expectedResult.setEndDate(newEndDate);
 
     JobListEntity actualResult = jobListDao.updateJobRecord(
         company.getId(), user.getId(), position.getId(), newStartDate, newEndDate
     );
+    assertEquals(expectedResult, actualResult);
 
-    assertEquals(newStartDate, actualResult.getStartDate());
-    assertEquals(newEndDate, actualResult.getEndDate());
-    clearJobRecord(jobRecord.getId());
+    validateAndClearJobRecord(actualResult);
     clearParentObjects(company, user, position);
   }
 
@@ -656,13 +695,25 @@ public class JobListDaoImplIntegrationTest {
     session.close();
   }
 
-  private void clearJobRecord(JobListId id) {
+  private void validateAndClearJobRecord(JobListEntity jobRecord) {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    JobListEntity jobRecord = session.get(JobListEntity.class, id);
-    assertNotNull(jobRecord);
+    JobListEntity fetchedJobRecord = jobListDao.findJobRecord(jobRecord.getId().getCompanyId(), jobRecord.getId().getUserId(), jobRecord.getId().getPositionId());
+    assertNotNull(fetchedJobRecord.getCompany());
+    assertEquals(fetchedJobRecord.getCompany().getId(), fetchedJobRecord.getId().getCompanyId());
+    assertNotNull(fetchedJobRecord.getUser());
+    assertEquals(fetchedJobRecord.getUser().getId(), fetchedJobRecord.getId().getUserId());
+    assertNotNull(fetchedJobRecord.getPosition());
+    assertEquals(fetchedJobRecord.getPosition().getId(), fetchedJobRecord.getId().getPositionId());
     session.remove(jobRecord);
     transaction.commit();
+    session.close();
+  }
+
+  private void validateJobRecordDoesNotExist(Integer companyId, Integer userId, Integer positionId) {
+    Session session = factory.openSession();
+    JobListEntity jobRecord = jobListDao.findJobRecord(companyId, userId, positionId);
+    assertNull(jobRecord);
     session.close();
   }
 

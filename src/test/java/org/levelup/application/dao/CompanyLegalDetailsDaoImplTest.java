@@ -60,6 +60,8 @@ class CompanyLegalDetailsDaoImplTest {
     String bic = "company bic";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, null, bic));
+
+    verify(session).close();
   }
 
   @Test
@@ -72,6 +74,9 @@ class CompanyLegalDetailsDaoImplTest {
     String bic = "company bic";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, bankName, bic));
+
+    verify(session).persist(any(CompanyLegalDetailsEntity.class));
+    verify(session).close();
   }
 
   @Test
@@ -82,6 +87,8 @@ class CompanyLegalDetailsDaoImplTest {
     String bankName = "company bank name";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, bankName, null));
+
+    verify(session).close();
   }
 
   @Test
@@ -93,6 +100,9 @@ class CompanyLegalDetailsDaoImplTest {
     String bic = "000000000000000000000000000000000000000000000000000000000000";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, bankName, bic));
+
+    verify(session).persist(any(CompanyLegalDetailsEntity.class));
+    verify(session).close();
   }
 
   @Test
@@ -103,6 +113,8 @@ class CompanyLegalDetailsDaoImplTest {
     String bic = "company bic";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(null, bankName, bic));
+
+    verify(session).close();
   }
 
   @Test
@@ -114,6 +126,9 @@ class CompanyLegalDetailsDaoImplTest {
     String bic = "company bic";
 
     assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, bankName, bic));
+
+    verify(session).persist(any(CompanyLegalDetailsEntity.class));
+    verify(session).close();
   }
 
   @Test
@@ -130,6 +145,21 @@ class CompanyLegalDetailsDaoImplTest {
   }
 
   @Test
+  @DisplayName("Update legal details: Legal details already exist")
+  public void testUpdateLegalDetailsInCompany_whenLegalDetailsExist_thenThrowPersistenceException() {
+    Integer id = 1;
+    String bankName = "company bank name";
+    String bic = "company bic";
+    dao.updateLegalDetailsInCompany(id, bankName, bic);
+    doThrow(PersistenceException.class).when(transaction).commit();
+
+    assertThrows(PersistenceException.class, () -> dao.updateLegalDetailsInCompany(id, bankName, bic));
+
+    verify(session, times(2)).persist(any(CompanyLegalDetailsEntity.class));
+    verify(session, times(2)).close();
+  }
+
+  @Test
   @DisplayName("Find by bank name: Bank name is null")
   public void testFindAllByBankName_whenBankNameIsNull_returnEmptyCollection() {
     List<CompanyLegalDetailsEntity> expectedResult = new ArrayList<>();
@@ -137,6 +167,7 @@ class CompanyLegalDetailsDaoImplTest {
 
     Collection<CompanyLegalDetailsEntity> actualResult = dao.findAllByBankName(null);
     assertTrue(actualResult.isEmpty());
+
     verifyFindByBankNameCalls(null);
   }
 
@@ -150,6 +181,7 @@ class CompanyLegalDetailsDaoImplTest {
 
     Collection<CompanyLegalDetailsEntity> actualResult = dao.findAllByBankName(bankName);
     assertTrue(actualResult.isEmpty());
+
     verifyFindByBankNameCalls(bankName);
   }
 
@@ -162,6 +194,7 @@ class CompanyLegalDetailsDaoImplTest {
 
     Collection<CompanyLegalDetailsEntity> actualResult = dao.findAllByBankName(bankName);
     assertTrue(actualResult.isEmpty());
+
     verifyFindByBankNameCalls(bankName);
   }
 
@@ -175,6 +208,7 @@ class CompanyLegalDetailsDaoImplTest {
 
     Collection<CompanyLegalDetailsEntity> actualResult = dao.findAllByBankName(bankName);
     assertEquals(expectedResult, actualResult);
+
     verifyFindByBankNameCalls(bankName);
   }
 

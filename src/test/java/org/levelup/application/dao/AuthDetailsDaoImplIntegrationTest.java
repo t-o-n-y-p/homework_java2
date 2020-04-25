@@ -12,6 +12,7 @@ import org.levelup.application.domain.UserEntity;
 import org.levelup.configuration.HibernateTestConfiguration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,6 +88,7 @@ public class AuthDetailsDaoImplIntegrationTest {
     String login = "user login";
     String password = "user password";
     UserEntity expectedResult = prepareEnvironment();
+    assertNotNull(expectedResult.getId());
 
     UserEntity actualResult = authDetailsDao.logIn(login, password);
     assertEquals(expectedResult, actualResult);
@@ -97,13 +99,13 @@ public class AuthDetailsDaoImplIntegrationTest {
   private void clearEnvironment() {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    AuthDetailsEntity authDetails = session.createQuery(
+    List<AuthDetailsEntity> authDetails = session.createQuery(
         "from AuthDetailsEntity where login = :login and password = :password", AuthDetailsEntity.class
     ).setParameter("login", "user login")
         .setParameter("password", "user password")
-        .getSingleResult();
-    assertNotNull(authDetails);
-    session.remove(authDetails);
+        .getResultList();
+    assertFalse(authDetails.isEmpty());
+    session.remove(authDetails.get(0));
     transaction.commit();
     session.close();
   }

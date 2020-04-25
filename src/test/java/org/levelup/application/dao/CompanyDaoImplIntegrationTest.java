@@ -93,10 +93,10 @@ public class CompanyDaoImplIntegrationTest {
     String name = "company name";
     String ein = "company ein";
     String address = "company address";
-    companyDao.createCompany(name, ein, address);
+    CompanyEntity company = companyDao.createCompany(name, ein, address);
     assertThrows(PersistenceException.class, () -> companyDao.createCompany(name, ein, address));
 
-    clearEnvironment();
+    clearEnvironment(company);
   }
 
   @Test
@@ -105,13 +105,14 @@ public class CompanyDaoImplIntegrationTest {
     String name = "company name";
     String ein = "company ein";
     String address = "company address";
+
     CompanyEntity actualResult = companyDao.createCompany(name, ein, address);
     assertNotNull(actualResult.getId());
     assertEquals(name, actualResult.getName());
     assertEquals(ein, actualResult.getEin());
     assertEquals(address, actualResult.getAddress());
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -121,7 +122,7 @@ public class CompanyDaoImplIntegrationTest {
   }
 
   @Test
-  @DisplayName("Find by ID: Company does not exist")
+  @DisplayName("Find by ID: ID does not exist")
   public void testFindById_whenIdDoesNotExist_thenReturnNull() {
     Integer id = 1;
     CompanyEntity actualResult = companyDao.findById(id);
@@ -129,7 +130,7 @@ public class CompanyDaoImplIntegrationTest {
   }
 
   @Test
-  @DisplayName("Find by ID: Company exists")
+  @DisplayName("Find by ID: ID exists")
   public void testFindById_whenIdExists_thenReturnCompany() {
     CompanyEntity expectedResult = companyDao.createCompany(
         "company name", "company ein", "company address"
@@ -138,7 +139,7 @@ public class CompanyDaoImplIntegrationTest {
     CompanyEntity actualResult = companyDao.findById(id);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -172,7 +173,7 @@ public class CompanyDaoImplIntegrationTest {
     CompanyEntity actualResult = companyDao.findByEin(ein);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -210,7 +211,7 @@ public class CompanyDaoImplIntegrationTest {
     Collection<CompanyEntity> actualResult = companyDao.findByName(name);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    clearEnvironment(company);
   }
 
   @Test
@@ -258,7 +259,7 @@ public class CompanyDaoImplIntegrationTest {
     CompanyEntity actualResult = companyDao.updateCompany(ein, name, address);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -266,11 +267,13 @@ public class CompanyDaoImplIntegrationTest {
   public void testUpdateCompany_whenNameIsNull_thenThrowPersistenceException() {
     String ein = "company ein";
     String address = "company address";
-    companyDao.createCompany("name", ein, "address");
+    CompanyEntity company = companyDao.createCompany("name", ein, "address");
 
     assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, null, address));
 
-    clearEnvironment();
+    CompanyEntity fetchedCompany = companyDao.findById(company.getId());
+    assertEquals(company, fetchedCompany);
+    clearEnvironment(company);
   }
 
   @Test
@@ -280,11 +283,13 @@ public class CompanyDaoImplIntegrationTest {
     String name = "company name company name company name company name company name company name " +
         "company name company name company name company name company name";
     String address = "company address";
-    companyDao.createCompany("name", ein, "address");
+    CompanyEntity company = companyDao.createCompany("name", ein, "address");
 
     assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, name, address));
 
-    clearEnvironment();
+    CompanyEntity fetchedCompany = companyDao.findById(company.getId());
+    assertEquals(company, fetchedCompany);
+    clearEnvironment(company);
   }
 
   @Test
@@ -292,21 +297,19 @@ public class CompanyDaoImplIntegrationTest {
   public void testUpdateCompany_whenAddressIsNull_thenThrowPersistenceException() {
     String ein = "company ein";
     String name = "company name";
-    companyDao.createCompany("name", ein, "address");
+    CompanyEntity company = companyDao.createCompany("name", ein, "address");
 
     assertThrows(PersistenceException.class, () -> companyDao.updateCompany(ein, name, null));
 
-    clearEnvironment();
+    CompanyEntity fetchedCompany = companyDao.findById(company.getId());
+    assertEquals(company, fetchedCompany);
+    clearEnvironment(company);
   }
 
-  private void clearEnvironment() {
+  private void clearEnvironment(CompanyEntity company) {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    List<CompanyEntity> companies = session.createQuery("from CompanyEntity where ein = :ein", CompanyEntity.class)
-        .setParameter("ein", "company ein")
-        .getResultList();
-    assertFalse(companies.isEmpty());
-    session.remove(companies.get(0));
+    session.remove(company);
     transaction.commit();
     session.close();
   }
