@@ -43,10 +43,10 @@ public class PositionDaoImplIntegrationTest {
   @DisplayName("Create: Position is already added")
   public void testCreatePosition_whenPositionNameExists_thenThrowPersistenceException() {
     String name = "position name";
-    positionDao.createPosition(name);
+    PositionEntity position = positionDao.createPosition(name);
     assertThrows(PersistenceException.class, () -> positionDao.createPosition(name));
 
-    clearEnvironment();
+    clearEnvironment(position);
   }
 
   @Test
@@ -65,7 +65,7 @@ public class PositionDaoImplIntegrationTest {
     assertNotNull(actualResult.getId());
     assertEquals(name, actualResult.getName());
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -100,18 +100,13 @@ public class PositionDaoImplIntegrationTest {
     PositionEntity actualResult = positionDao.findByName(name);
     assertEquals(expectedResult, actualResult);
 
-    clearEnvironment();
+    clearEnvironment(actualResult);
   }
 
-  private void clearEnvironment() {
+  private void clearEnvironment(PositionEntity position) {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
-    List<PositionEntity> positions = session.createQuery(
-        "from PositionEntity where name = :name", PositionEntity.class
-    ).setParameter("name", "position name")
-        .getResultList();
-    assertFalse(positions.isEmpty());
-    session.remove(positions.get(0));
+    session.remove(position);
     transaction.commit();
     session.close();
   }

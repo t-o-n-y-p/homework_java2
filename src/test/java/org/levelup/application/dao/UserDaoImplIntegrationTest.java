@@ -116,7 +116,7 @@ public class UserDaoImplIntegrationTest {
     UserEntity user = userDao.createUser(name, lastName, passport, addresses);
     assertThrows(PersistenceException.class, () -> userDao.createUser(name, lastName, passport, addresses));
 
-    assertUserExistsAndClear(user);
+    clearEnvironment(user);
   }
 
   @Test
@@ -145,7 +145,7 @@ public class UserDaoImplIntegrationTest {
     assertEquals(passport, actualResult.getPassport());
     assertTrue(actualResult.getAddresses().isEmpty());
 
-    assertUserExistsAndClear(actualResult);
+    clearEnvironment(actualResult);
   }
 
   @Test
@@ -213,7 +213,7 @@ public class UserDaoImplIntegrationTest {
     assertUserExistsAndClear();
   }
 
-  private void assertUserExistsAndClear(UserEntity user) {
+  private void clearEnvironment(UserEntity user) {
     Session session = factory.openSession();
     Transaction transaction = session.beginTransaction();
     session.remove(user);
