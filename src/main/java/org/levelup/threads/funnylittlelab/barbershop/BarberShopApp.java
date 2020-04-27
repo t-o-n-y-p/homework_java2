@@ -2,6 +2,7 @@ package org.levelup.threads.funnylittlelab.barbershop;
 
 import lombok.SneakyThrows;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class BarberShopApp {
@@ -11,10 +12,13 @@ public class BarberShopApp {
 
     BarberShop barberShop = new BarberShop();
     Barber barber = new Barber(barberShop);
-    new Thread(barber).start();
+    Thread barberThread = new Thread(barber);
+    barberThread.setDaemon(true);
+    barberThread.start();
 
-    for (int i = 0; i < 6; i++) {
-      TimeUnit.MILLISECONDS.sleep(200);
+    Random r = new Random();
+    for (int i = 0; i < 30; i++) {
+      TimeUnit.SECONDS.sleep(r.nextInt(10) + 1);
       Client client = new Client(barberShop);
       new Thread(client).start();
     }

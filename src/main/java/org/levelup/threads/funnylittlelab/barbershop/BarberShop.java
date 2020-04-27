@@ -44,11 +44,11 @@ public class BarberShop {
     synchronized (this) {
       numberOfClients--;
       queueSize--;
-      for (int i = 0; i < queueSize; i++) {
+      for (int i = 0; i <= queueSize; i++) {
         notify();
       }
     }
-    Thread.sleep(1000);
+    Thread.sleep(500);
   }
 
 }
