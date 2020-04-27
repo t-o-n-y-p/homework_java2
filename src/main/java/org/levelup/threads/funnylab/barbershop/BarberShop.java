@@ -1,4 +1,4 @@
-package org.levelup.threads.funnylittlelab.barbershop;
+package org.levelup.threads.funnylab.barbershop;
 
 import lombok.SneakyThrows;
 
@@ -29,18 +29,21 @@ public class BarberShop {
 
   @SneakyThrows
   public void dequeue() {
+
     synchronized (this) {
       while (numberOfClients < 1) {
         System.out.println("Barber is sleeping");
         wait();
       }
     }
+
     System.out.println("Working with client...");
     for (int i = 5; i > 0; i--) {
       System.out.println(i + "...");
       Thread.sleep(1000);
     }
     System.out.println("Finished.");
+
     synchronized (this) {
       numberOfClients--;
       queueSize--;
@@ -49,6 +52,7 @@ public class BarberShop {
       }
     }
     Thread.sleep(500);
+
   }
 
 }

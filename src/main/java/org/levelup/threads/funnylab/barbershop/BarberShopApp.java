@@ -1,4 +1,4 @@
-package org.levelup.threads.funnylittlelab.barbershop;
+package org.levelup.threads.funnylab.barbershop;
 
 import lombok.SneakyThrows;
 
