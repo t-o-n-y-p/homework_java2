@@ -5,9 +5,11 @@ import lombok.SneakyThrows;
 public class BarberShop {
 
   private int numberOfClients = 0;
+  private int queueSize = 0;
 
   @SneakyThrows
   public synchronized void queue() {
+    queueSize++;
     if (numberOfClients == 0) {
       numberOfClients++;
       System.out.println("Barber is awoken by client: " + Thread.currentThread().getName());
@@ -17,7 +19,6 @@ public class BarberShop {
       return;
     }
     while (numberOfClients > 0) {
-      System.out.println("Client is sleeping");
       wait();
     }
     numberOfClients++;
@@ -42,8 +43,10 @@ public class BarberShop {
     System.out.println("Finished.");
     synchronized (this) {
       numberOfClients--;
-      notify();
-      notify();
+      queueSize--;
+      for (int i = 0; i < queueSize; i++) {
+        notify();
+      }
     }
     Thread.sleep(1000);
   }

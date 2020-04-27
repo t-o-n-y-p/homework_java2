@@ -13,8 +13,8 @@ public class BarberShopApp {
     Barber barber = new Barber(barberShop);
     new Thread(barber).start();
 
-    for (int i = 0; i < 3; i++) {
-      TimeUnit.SECONDS.sleep(1);
+    for (int i = 0; i < 6; i++) {
+      TimeUnit.MILLISECONDS.sleep(200);
       Client client = new Client(barberShop);
       new Thread(client).start();
     }
