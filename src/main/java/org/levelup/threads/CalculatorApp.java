@@ -15,7 +15,7 @@ public class CalculatorApp {
     BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
     bufferedWriter.write(String.valueOf(0));
     bufferedWriter.close();
-    generateFiles(10);
+    generateFiles(25);
 
     File inputFile;
     int n = 1;
@@ -27,10 +27,10 @@ public class CalculatorApp {
 
   @SneakyThrows
   public static void generateFiles(int numberOfFiles) {
+    Random r = new Random();
+    BufferedWriter bufferedWriter;
     for (int i = 1; i <= numberOfFiles; i++) {
-      Random r = new Random();
-      File inputFile = new File("in_" + i + ".txt");
-      BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(inputFile));
+      bufferedWriter = new BufferedWriter(new FileWriter(new File("in_" + i + ".txt")));
       bufferedWriter.write(r.nextInt(3) + 1 + "\n");
       bufferedWriter.write(
           r.nextDouble() * r.nextInt(r.nextInt(20) + 1) + " "
