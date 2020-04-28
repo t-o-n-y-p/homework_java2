@@ -10,9 +10,7 @@ public class Supermarket {
   private int[] queueSize = new int[2];
 
   @SneakyThrows
-  public synchronized void enqueue() {
-    Random r = new Random();
-    int employeeId = r.nextInt(2);
+  public synchronized void enqueue(int employeeId) {
     queueSize[employeeId]++;
     if (!busy[employeeId]) {
       busy[employeeId] = true;
