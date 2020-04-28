@@ -12,7 +12,7 @@ public class Client implements Runnable {
   @SneakyThrows
   public void run() {
     System.out.println("Client " + Thread.currentThread().getName() + " created");
-    barberShop.queue();
+    barberShop.enqueue();
     System.out.println("Client " + Thread.currentThread().getName() + " terminated by barber");
   }
 }

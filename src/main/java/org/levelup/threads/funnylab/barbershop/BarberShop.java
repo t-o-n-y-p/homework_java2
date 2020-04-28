@@ -4,24 +4,24 @@ import lombok.SneakyThrows;
 
 public class BarberShop {
 
-  private int numberOfClients = 0;
+  private boolean busy = false;
   private int queueSize = 0;
 
   @SneakyThrows
-  public synchronized void queue() {
+  public synchronized void enqueue() {
     queueSize++;
-    if (numberOfClients == 0) {
-      numberOfClients++;
+    if (!busy) {
+      busy = true;
       System.out.println("Barber is awoken by client: " + Thread.currentThread().getName());
       notify();
       System.out.println("Client " + Thread.currentThread().getName() + " is sleeping");
       wait();
       return;
     }
-    while (numberOfClients > 0) {
+    while (busy) {
       wait();
     }
-    numberOfClients++;
+    busy = true;
     System.out.println("Client " + Thread.currentThread().getName() + " awoken by barber");
     System.out.println("Client " + Thread.currentThread().getName() + " is sleeping");
     wait();
@@ -31,7 +31,7 @@ public class BarberShop {
   public void dequeue() {
 
     synchronized (this) {
-      while (numberOfClients < 1) {
+      while (!busy) {
         System.out.println("Barber is sleeping");
         wait();
       }
@@ -45,7 +45,7 @@ public class BarberShop {
     System.out.println("Finished.");
 
     synchronized (this) {
-      numberOfClients--;
+      busy = false;
       queueSize--;
       for (int i = 0; i <= queueSize; i++) {
         notify();
