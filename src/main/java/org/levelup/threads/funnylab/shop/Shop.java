@@ -1,19 +1,20 @@
-package org.levelup.threads.funnylab.supermarket;
+package org.levelup.threads.funnylab.shop;
 
 import lombok.SneakyThrows;
 
-public class Supermarket {
+public class Shop {
 
-  private boolean[] busy = new boolean[2];
-  private int[] queueSize = new int[2];
+  private boolean[] busy = new boolean[3];
+  private int[] queueSize = new int[3];
 
   @SneakyThrows
-  public synchronized void enqueue(int employeeId) {
+  public synchronized void enqueue(Integer employeeId) {
     queueSize[employeeId]++;
     if (!busy[employeeId]) {
       busy[employeeId] = true;
       System.out.println("Employee " + employeeId + " is awoken by customer: " + Thread.currentThread().getName());
       notifyAll();
+      wait();
       return;
     }
     while (busy[employeeId]) {
