@@ -14,5 +14,6 @@ public class Customer implements Runnable {
     System.out.println("Customer " + Thread.currentThread().getName() + " created");
     Random r = new Random();
     supermarket.enqueue(r.nextInt(2));
+    System.out.println("Customer " + Thread.currentThread().getName() + " is done.");
   }
 }

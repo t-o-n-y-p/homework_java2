@@ -14,6 +14,9 @@ public class Supermarket {
       busy[employeeId] = true;
       System.out.println("Employee " + employeeId + " is awoken by customer: " + Thread.currentThread().getName());
       notifyAll();
+      while (busy[employeeId]) {
+        wait();
+      }
       return;
     }
     while (busy[employeeId]) {
@@ -21,7 +24,9 @@ public class Supermarket {
     }
     busy[employeeId] = true;
     System.out.println("Customer " + Thread.currentThread().getName() + " awoken by employee " + employeeId);
-    wait();
+    while (busy[employeeId]) {
+      wait();
+    }
   }
 
   @SneakyThrows
