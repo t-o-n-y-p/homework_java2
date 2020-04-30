@@ -27,6 +27,7 @@ public class Garden {
       }
       Random r = new Random();
       rottenFlowers.get(r.nextInt(rottenFlowers.size())).setRotten(false);
+      System.out.println(getFlowersState());
     }
     System.out.println(Thread.currentThread().getName() + ": Revived 1 flower.");
   }
@@ -40,7 +41,12 @@ public class Garden {
     }
     Collections.shuffle(flowers);
     System.out.println("Flowers destroyed: " + numberOfRottenFlowers);
+    System.out.println(getFlowersState());
     notifyAll();
+  }
+
+  private String getFlowersState() {
+    return flowers.stream().map(f -> f.isRotten() ? "1" : "0").collect(Collectors.joining(" "));
   }
 
 }
