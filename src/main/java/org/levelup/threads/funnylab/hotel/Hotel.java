@@ -39,11 +39,11 @@ public class Hotel {
   @SneakyThrows
   public void checkOut() {
     while (true) {
-      Thread.sleep(10000);
+      Thread.sleep(rooms * 400);
       synchronized (guests) {
         guests.notifyAll();
       }
-      Thread.sleep(5000);
+      Thread.sleep(rooms * 200);
       synchronized (queue) {
         queue.notifyAll();
       }
