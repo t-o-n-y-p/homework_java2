@@ -11,8 +11,9 @@ public class Reception implements Runnable {
   @Override
   @SneakyThrows
   public void run() {
+    int timeout = hotel.getRooms() * 500;
     while (true) {
-      Thread.sleep(hotel.getRooms() * 500);
+      Thread.sleep(timeout);
       hotel.checkOut();
     }
   }
