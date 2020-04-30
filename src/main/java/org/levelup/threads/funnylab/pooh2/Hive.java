@@ -31,10 +31,12 @@ public class Hive {
     synchronized (bees) {
       beesInsideTheHive++;
       System.out.println("Bee has arrived. Bees remaining: " + beesInsideTheHive);
-      if (currentState < capacity) {
-        currentState++;
+      synchronized (this) {
+        if (currentState < capacity) {
+          currentState++;
+        }
+        System.out.println("Amount of honey: " + currentState);
       }
-      System.out.println("Amount of honey: " + currentState);
       bees.notifyAll();
     }
     synchronized (pooh) {
@@ -50,7 +52,7 @@ public class Hive {
       }
     }
     if (beesInsideTheHive < 3) {
-      synchronized (pooh) {
+      synchronized (this) {
         currentState = 0;
       }
       System.out.println("Pooh: Ha-ha-ha! Eating honey...");

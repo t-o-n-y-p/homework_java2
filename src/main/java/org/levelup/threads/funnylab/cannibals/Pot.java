@@ -16,7 +16,9 @@ public class Pot {
     synchronized (cannibals) {
       System.out.println(Thread.currentThread().getName() + ": Found " + currentState + " pieces");
       if (currentState == 0 && chefWasNotNotified) {
-        chefWasNotNotified = false;
+        synchronized (this) {
+          chefWasNotNotified = false;
+        }
         System.out.println(Thread.currentThread().getName() + ": Notified chef!");
         synchronized (cook) {
           cook.notify();
@@ -26,6 +28,8 @@ public class Pot {
         System.out.println(Thread.currentThread().getName() + ": Waiting for chef...");
         cannibals.wait();
       }
+    }
+    synchronized (this) {
       currentState--;
       System.out.println(Thread.currentThread().getName() + ": Finished eating.");
     }
@@ -37,12 +41,14 @@ public class Pot {
       while (currentState > 0) {
         cook.wait();
       }
-      System.out.println("Cooking...");
-      Thread.sleep(5000);
+    }
+    System.out.println("Cooking...");
+    Thread.sleep(5000);
+    synchronized (this) {
       currentState = capacity;
       chefWasNotNotified = true;
-      System.out.println("Meat is ready!");
     }
+    System.out.println("Meat is ready!");
     synchronized (cannibals) {
       cannibals.notifyAll();
     }

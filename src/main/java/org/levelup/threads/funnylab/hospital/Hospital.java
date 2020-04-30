@@ -42,6 +42,8 @@ public class Hospital {
           doctors.get(doctorId).notify();
         }
       }
+    }
+    synchronized (this) {
       busy[doctorId] = true;
     }
     synchronized (currentPatients.get(doctorId)) {
@@ -71,7 +73,7 @@ public class Hospital {
     }
     System.out.println("Doctor " + doctorId + ": Finished.");
 
-    synchronized (doctors.get(doctorId)) {
+    synchronized (this) {
       busy[doctorId] = false;
     }
     synchronized (currentPatients.get(doctorId)) {

@@ -38,6 +38,8 @@ public class Supermarket {
           employees.get(employeeId).notify();
         }
       }
+    }
+    synchronized (this) {
       busy[employeeId] = true;
     }
     synchronized (currentCustomers.get(employeeId)) {
@@ -62,7 +64,7 @@ public class Supermarket {
     }
     System.out.println("Employee " + employeeId + ": Finished.");
 
-    synchronized (employees.get(employeeId)) {
+    synchronized (this) {
       busy[employeeId] = false;
     }
     synchronized (currentCustomers.get(employeeId)) {

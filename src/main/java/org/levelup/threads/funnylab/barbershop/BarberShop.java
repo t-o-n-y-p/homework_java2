@@ -24,6 +24,8 @@ public class BarberShop {
           barber.notify();
         }
       }
+    }
+    synchronized (this) {
       busy = true;
     }
     synchronized (currentClient) {
@@ -49,7 +51,7 @@ public class BarberShop {
     }
     System.out.println("Finished.");
 
-    synchronized (barber) {
+    synchronized (this) {
       busy = false;
     }
     synchronized (currentClient) {

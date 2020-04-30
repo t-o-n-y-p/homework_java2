@@ -17,6 +17,8 @@ public class Table {
       while (resources.size() > 0) {
         resourceManager.wait();
       }
+    }
+    synchronized (this) {
       Random r = new Random();
       int index;
       if ((index = r.nextInt(3)) == 0) {
@@ -42,6 +44,8 @@ public class Table {
       while (resources.size() < 2 || resources.contains(resource)) {
         smokers.wait();
       }
+    }
+    synchronized (this) {
       resources.clear();
       System.out.println("Smoker with " + resource + " starts smoking...");
       Thread.sleep(2000);

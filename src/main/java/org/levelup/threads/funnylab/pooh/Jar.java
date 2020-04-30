@@ -16,13 +16,15 @@ public class Jar {
       while (currentState == capacity) {
         bees.wait();
       }
+    }
+    synchronized (this) {
       currentState++;
       System.out.println("Amount of honey: " + currentState);
-      if (currentState == capacity) {
-        System.out.println("Pooh notified!");
-        synchronized (pooh) {
-          pooh.notify();
-        }
+    }
+    if (currentState == capacity) {
+      System.out.println("Pooh notified!");
+      synchronized (pooh) {
+        pooh.notify();
       }
     }
   }
@@ -34,6 +36,8 @@ public class Jar {
         System.out.println("Pooh is sleeping...");
         pooh.wait();
       }
+    }
+    synchronized (this) {
       System.out.println("Pooh is eating the honey...");
       Thread.sleep(1000);
       currentState = 0;
