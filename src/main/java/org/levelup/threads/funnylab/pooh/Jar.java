@@ -7,24 +7,41 @@ public class Jar {
   private final int capacity = 9;
   private int currentState;
 
-  public synchronized void fill() {
-    currentState++;
-    System.out.println("Amount of honey: " + currentState);
-    if (currentState == capacity) {
-      System.out.println("Pooh notified!");
-      notify();
+  private final Object pooh = new Object();
+  private final Object bees = new Object();
+
+  @SneakyThrows
+  public void fill() {
+    synchronized (bees) {
+      while (currentState == capacity) {
+        bees.wait();
+      }
+      currentState++;
+      System.out.println("Amount of honey: " + currentState);
+      if (currentState == capacity) {
+        System.out.println("Pooh notified!");
+        synchronized (pooh) {
+          pooh.notify();
+        }
+      }
     }
   }
 
   @SneakyThrows
-  public synchronized void clear() {
-    while (currentState < capacity) {
-      System.out.println("Pooh is sleeping...");
-      wait();
+  public void clear() {
+    synchronized (pooh) {
+      while (currentState < capacity) {
+        System.out.println("Pooh is sleeping...");
+        pooh.wait();
+      }
+      System.out.println("Pooh is eating the honey...");
+      Thread.sleep(1000);
+      currentState = 0;
+      System.out.println("Amount of honey: " + currentState);
     }
-    System.out.println("Pooh is eating the honey!");
-    currentState = 0;
-    System.out.println("Amount of honey: " + currentState);
+    synchronized (bees) {
+      bees.notifyAll();
+    }
   }
 
 }

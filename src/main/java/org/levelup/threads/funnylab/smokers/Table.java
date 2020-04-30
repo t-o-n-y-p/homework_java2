@@ -8,37 +8,48 @@ public class Table {
 
   private Collection<String> resources = new HashSet<>();
 
+  private final Object smokers = new Object();
+  private final Object resourceManager = new Object();
+
   @SneakyThrows
-  public synchronized void generateResources() {
-    while (resources.size() > 0) {
-      wait();
+  public void generateResources() {
+    synchronized (resourceManager) {
+      while (resources.size() > 0) {
+        resourceManager.wait();
+      }
+      Random r = new Random();
+      int index;
+      if ((index = r.nextInt(3)) == 0) {
+        resources.add("tobacco");
+        resources.add("paper");
+      } else if (index == 1) {
+        resources.add("tobacco");
+        resources.add("sticks");
+      } else if (index == 2) {
+        resources.add("paper");
+        resources.add("sticks");
+      }
+      System.out.println("Generated: " + resources);
     }
-    Random r = new Random();
-    int index;
-    if ((index = r.nextInt(3)) == 0) {
-      resources.add("tobacco");
-      resources.add("paper");
-    } else if (index == 1) {
-      resources.add("tobacco");
-      resources.add("sticks");
-    } else if (index == 2) {
-      resources.add("paper");
-      resources.add("sticks");
+    synchronized (smokers) {
+      smokers.notifyAll();
     }
-    System.out.println("Generated: " + resources);
-    notifyAll();
   }
 
   @SneakyThrows
-  public synchronized void smoke(String resource) {
-    while (resources.size() < 2 || resources.contains(resource)) {
-      wait();
+  public void smoke(String resource) {
+    synchronized (smokers) {
+      while (resources.size() < 2 || resources.contains(resource)) {
+        smokers.wait();
+      }
+      resources.clear();
+      System.out.println("Smoker with " + resource + " starts smoking...");
+      Thread.sleep(2000);
+      System.out.println("Finished.");
     }
-    resources.clear();
-    System.out.println("Smoker with " + resource + " starts smoking...");
-    Thread.sleep(2000);
-    System.out.println("Finished.");
-    notify();
+    synchronized (resourceManager) {
+      resourceManager.notify();
+    }
   }
 
 }

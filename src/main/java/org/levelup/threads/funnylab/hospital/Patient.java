@@ -13,7 +13,7 @@ public class Patient implements Runnable {
   public void run() {
     System.out.println("Patient " + Thread.currentThread().getName() + " created");
     Random r = new Random();
-    int nextDoctor = hospital.enqueue(r.nextInt(2));
+    int nextDoctor = hospital.enqueue(r.nextInt(hospital.getNumberOfDoctorsOnDuty()));
     hospital.enqueue(nextDoctor);
     System.out.println("Patient " + Thread.currentThread().getName() + " is done.");
   }

@@ -13,7 +13,7 @@ public class Customer implements Runnable {
   public void run() {
     System.out.println("Customer " + Thread.currentThread().getName() + " created");
     Random r = new Random();
-    supermarket.enqueue(r.nextInt(2));
+    supermarket.enqueue(r.nextInt(supermarket.getNumberOfEmployees()));
     System.out.println("Customer " + Thread.currentThread().getName() + " is done.");
   }
 }

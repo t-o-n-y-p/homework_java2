@@ -5,35 +5,40 @@ import lombok.SneakyThrows;
 public class BarberShop {
 
   private boolean busy = false;
-  private int queueSize = 0;
+
+  private final Object barber = new Object();
+  private final Object queue = new Object();
+  private final Object currentClient = new Object();
 
   @SneakyThrows
-  public synchronized void enqueue() {
-    queueSize++;
-    if (!busy) {
+  public void enqueue() {
+    synchronized (queue) {
+      if (busy) {
+        while (busy) {
+          queue.wait();
+        }
+        System.out.println("Client " + Thread.currentThread().getName() + " awoken by barber");
+      } else {
+        System.out.println("Barber is awoken by client: " + Thread.currentThread().getName());
+        synchronized (barber) {
+          barber.notify();
+        }
+      }
       busy = true;
-      System.out.println("Barber is awoken by client: " + Thread.currentThread().getName());
-      notify();
+    }
+    synchronized (currentClient) {
       System.out.println("Client " + Thread.currentThread().getName() + " is sleeping");
-      wait();
-      return;
+      currentClient.wait();
     }
-    while (busy) {
-      wait();
-    }
-    busy = true;
-    System.out.println("Client " + Thread.currentThread().getName() + " awoken by barber");
-    System.out.println("Client " + Thread.currentThread().getName() + " is sleeping");
-    wait();
   }
 
   @SneakyThrows
   public void dequeue() {
 
-    synchronized (this) {
+    synchronized (barber) {
       while (!busy) {
         System.out.println("Barber is sleeping");
-        wait();
+        barber.wait();
       }
     }
 
@@ -44,12 +49,14 @@ public class BarberShop {
     }
     System.out.println("Finished.");
 
-    synchronized (this) {
+    synchronized (barber) {
       busy = false;
-      queueSize--;
-      for (int i = 0; i <= queueSize; i++) {
-        notify();
-      }
+    }
+    synchronized (currentClient) {
+      currentClient.notify();
+    }
+    synchronized (queue) {
+      queue.notify();
     }
     Thread.sleep(500);
 

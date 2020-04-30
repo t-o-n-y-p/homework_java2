@@ -12,47 +12,56 @@ public class Gallery {
   private int[] attendersPerPicture = new int[5];
   private final double chanceToLeave = 0.2;
 
+  private final Object guard = new Object();
+  private final Object attenders = new Object();
+
   @SneakyThrows
-  public synchronized void allowEntrance() {
-    while (currentState == capacity) {
-      wait();
+  public void allowEntrance() {
+    synchronized (guard) {
+      while (currentState == capacity) {
+        guard.wait();
+      }
     }
-    notify();
+    synchronized (attenders) {
+      attenders.notifyAll();
+    }
   }
 
   @SneakyThrows
   public void enter() {
-    synchronized (this) {
+    synchronized (attenders) {
       while (currentState == capacity) {
-        wait();
+        attenders.wait();
       }
       currentState++;
+      System.out.println("Attenders: " + currentState);
     }
     Random r = new Random();
     for (int i = 0; i < attendersPerPicture.length; i++) {
-      synchronized (this) {
+      synchronized (attenders) {
         attendersPerPicture[i]++;
-        System.out.println("Attenders: " + currentState);
         System.out.print("Attenders per picture: ");
         Arrays.stream(attendersPerPicture).forEach(p -> System.out.print(p + " "));
         System.out.println();
       }
       Thread.sleep(r.nextInt(2000) + 2000);
-      synchronized (this) {
+      synchronized (attenders) {
         attendersPerPicture[i]--;
       }
       if (r.nextDouble() > 1 - chanceToLeave) {
         break;
       }
     }
-    synchronized (this) {
+    synchronized (attenders) {
       currentState--;
       System.out.println("Attender has left.");
       System.out.println("Attenders: " + currentState);
       System.out.print("Attenders per picture: ");
       Arrays.stream(attendersPerPicture).forEach(p -> System.out.print(p + " "));
       System.out.println();
-      notify();
+    }
+    synchronized (guard) {
+      guard.notify();
     }
 
   }

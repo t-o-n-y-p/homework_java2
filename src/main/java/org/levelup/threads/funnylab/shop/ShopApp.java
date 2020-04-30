@@ -10,8 +10,9 @@ public class ShopApp {
   @SneakyThrows
   public static void main(String[] args) {
 
-    Shop shop = new Shop();
-    for (int i = 0; i < 3; i++) {
+    int numberOfEmployees = 3;
+    Shop shop = new Shop(numberOfEmployees);
+    for (int i = 0; i < numberOfEmployees; i++) {
       new Thread(new Employee(shop, i)).start();
     }
 

@@ -18,7 +18,7 @@ public class BarberShopApp {
 
     Random r = new Random();
     for (int i = 0; i < 30; i++) {
-      TimeUnit.SECONDS.sleep(r.nextInt(10) + 1);
+      TimeUnit.SECONDS.sleep(r.nextInt(12) + 1);
       Client client = new Client(barberShop);
       new Thread(client).start();
     }

@@ -10,8 +10,9 @@ public class SupermarketApp {
   @SneakyThrows
   public static void main(String[] args) {
 
-    Supermarket supermarket = new Supermarket();
-    for (int i = 0; i < 2; i++) {
+    int numberOfEmployees = 2;
+    Supermarket supermarket = new Supermarket(numberOfEmployees);
+    for (int i = 0; i < numberOfEmployees; i++) {
       new Thread(new Employee(supermarket, i)).start();
     }
 

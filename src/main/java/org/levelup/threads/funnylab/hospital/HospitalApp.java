@@ -10,8 +10,10 @@ public class HospitalApp {
   @SneakyThrows
   public static void main(String[] args) {
 
-    Hospital hospital = new Hospital();
-    for (int i = 0; i < 5; i++) {
+    int numberOfDoctorsOnDuty = 2;
+    int numberOfDoctors = 3;
+    Hospital hospital = new Hospital(numberOfDoctorsOnDuty, numberOfDoctors);
+    for (int i = 0; i < numberOfDoctorsOnDuty + numberOfDoctors; i++) {
       new Thread(new Doctor(hospital, i)).start();
     }
 

@@ -6,35 +6,46 @@ public class Pot {
 
   private final int capacity = 12;
   private int currentState;
-  private boolean chefWasNotified = true;
+  private boolean chefWasNotNotified;
+
+  private final Object cook = new Object();
+  private final Object cannibals = new Object();
 
   @SneakyThrows
-  public synchronized void eat() {
-    System.out.println(Thread.currentThread().getName() + ": Found " + currentState + " pieces");
-    if (currentState > 0) {
+  public void eat() {
+    synchronized (cannibals) {
+      System.out.println(Thread.currentThread().getName() + ": Found " + currentState + " pieces");
+      if (currentState == 0 && chefWasNotNotified) {
+        chefWasNotNotified = false;
+        System.out.println(Thread.currentThread().getName() + ": Notified chef!");
+        synchronized (cook) {
+          cook.notify();
+        }
+      }
+      while (currentState == 0) {
+        System.out.println(Thread.currentThread().getName() + ": Waiting for chef...");
+        cannibals.wait();
+      }
       currentState--;
       System.out.println(Thread.currentThread().getName() + ": Finished eating.");
-    } else {
-      if (!chefWasNotified) {
-        chefWasNotified = true;
-        System.out.println("Notified chef!");
-        notify();
-      }
-      wait();
     }
   }
 
   @SneakyThrows
-  public synchronized void cook() {
-    while (currentState > 0) {
-      wait();
+  public void cook() {
+    synchronized (cook) {
+      while (currentState > 0) {
+        cook.wait();
+      }
+      System.out.println("Cooking...");
+      Thread.sleep(5000);
+      currentState = capacity;
+      chefWasNotNotified = true;
+      System.out.println("Meat is ready!");
     }
-    System.out.println("Cooking...");
-    Thread.sleep(5000);
-    currentState = capacity;
-    chefWasNotified = false;
-    System.out.println("Meat is ready!");
-    notifyAll();
+    synchronized (cannibals) {
+      cannibals.notifyAll();
+    }
   }
 
 }

@@ -2,57 +2,80 @@ package org.levelup.threads.funnylab.supermarket;
 
 import lombok.SneakyThrows;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Supermarket {
 
-  private boolean[] busy = new boolean[2];
-  private int[] queueSize = new int[2];
+  private final boolean[] busy;
+  private final int numberOfEmployees;
 
-  @SneakyThrows
-  public synchronized void enqueue(int employeeId) {
-    queueSize[employeeId]++;
-    if (!busy[employeeId]) {
-      busy[employeeId] = true;
-      System.out.println("Employee " + employeeId + " is awoken by customer: " + Thread.currentThread().getName());
-      notifyAll();
-      while (busy[employeeId]) {
-        wait();
-      }
-      return;
-    }
-    while (busy[employeeId]) {
-      wait();
-    }
-    busy[employeeId] = true;
-    System.out.println("Customer " + Thread.currentThread().getName() + " awoken by employee " + employeeId);
-    while (busy[employeeId]) {
-      wait();
+  private final List<Object> employees = new ArrayList<>();
+  private final List<Object> queues = new ArrayList<>();
+  private final List<Object> currentCustomers = new ArrayList<>();
+
+  public Supermarket(int numberOfEmployees) {
+    this.numberOfEmployees = numberOfEmployees;
+    busy = new boolean[numberOfEmployees];
+    for (int i = 0; i < numberOfEmployees; i++) {
+      employees.add(new Object());
+      queues.add(new Object());
+      currentCustomers.add(new Object());
     }
   }
 
   @SneakyThrows
-  public void dequeue(int id) {
+  public void enqueue(int employeeId) {
+    synchronized (queues.get(employeeId)) {
+      if (busy[employeeId]) {
+        while (busy[employeeId]) {
+          queues.get(employeeId).wait();
+        }
+        System.out.println("Customer " + Thread.currentThread().getName() + " awoken by employee " + employeeId);
+      } else {
+        System.out.println("Employee " + employeeId + " is awoken by customer: " + Thread.currentThread().getName());
+        synchronized (employees.get(employeeId)) {
+          employees.get(employeeId).notify();
+        }
+      }
+      busy[employeeId] = true;
+    }
+    synchronized (currentCustomers.get(employeeId)) {
+      currentCustomers.get(employeeId).wait();
+    }
+  }
 
-    synchronized (this) {
-      while (!busy[id]) {
-        System.out.println("Employee " + id + " is sleeping");
-        wait();
+  @SneakyThrows
+  public void dequeue(int employeeId) {
+
+    synchronized (employees.get(employeeId)) {
+      while (!busy[employeeId]) {
+        System.out.println("Employee " + employeeId + " is sleeping");
+        employees.get(employeeId).wait();
       }
     }
 
-    System.out.println("Employee " + id + ": Working with customer... ");
+    System.out.println("Employee " + employeeId + ": Working with client...");
     for (int i = 5; i > 0; i--) {
-      System.out.println("Employee " + id + ": " + i + "...");
+      System.out.println("Employee " + employeeId + ": " + i + "...");
       Thread.sleep(1000);
     }
-    System.out.println("Employee " + id + ": Finished.");
+    System.out.println("Employee " + employeeId + ": Finished.");
 
-    synchronized (this) {
-      busy[id] = false;
-      queueSize[id]--;
-      notifyAll();
+    synchronized (employees.get(employeeId)) {
+      busy[employeeId] = false;
+    }
+    synchronized (currentCustomers.get(employeeId)) {
+      currentCustomers.get(employeeId).notify();
+    }
+    synchronized (queues.get(employeeId)) {
+      queues.get(employeeId).notify();
     }
     Thread.sleep(500);
 
   }
 
+  public int getNumberOfEmployees() {
+    return numberOfEmployees;
+  }
 }
